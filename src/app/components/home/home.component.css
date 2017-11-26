@@ -1,0 +1,31 @@
+.jumbotron{
+    background-color:transparent;
+}
+
+.jumbotron img{
+    height: auto;
+    width: 150px;
+}
+
+h1{
+    font-size: 4em;
+}
+
+.vertical-center {
+    /* Firefox */
+    min-height: -moz-calc(94% - 125px);
+    /* WebKit */
+    min-height: -webkit-calc(94% - 125px);
+    /* Opera */
+    min-height: -o-calc(94% - 125px);
+    /* Standard */
+    min-height: calc(94% - 125px);
+
+    display: flex;
+    align-items: center;
+  }
+
+  /* .background{ */
+    /* background-color: #cccccc; */
+    /* background-image: linear-gradient(#F8BF5D, #ee7501, #F6A419, #ee7501,#F6A419, #F8BF5D); */
+  /* } */

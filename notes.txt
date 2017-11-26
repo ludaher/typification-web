@@ -1,0 +1,22 @@
+important cli commands in the project
+
+------------------------publish-----------------------
+npm install --save bootstrap@next
+npm install ngx-bootstrap --save
+npm i --save jquery
+npm install popper.js@^1.12.3 --save
+npm install ng2-pdf-viewer --save
+
+------------------------create components-----------------------
+ng generate component components/menu
+ng generate component components/home
+ng generate guard guards/auth
+ng g module modules/app-routing
+
+------------------------basic configuration-----------------------
+add bootstrap styles in angular-cli.json
+add bootstrap scripts in angular-cli.json
+
+------------------------publish-----------------------
+ng build --prod --env=
+ng build --prod --environment=qa --base-href /TypificationWeb

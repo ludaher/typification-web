@@ -1,0 +1,4 @@
+
+class AppSettingsServiceStub {
+    getSettings() {}
+  }

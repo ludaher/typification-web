@@ -1,0 +1,90 @@
+<form (ngSubmit)="f.form.valid && saveTypification()" #f="ngForm" novalidate class="container">
+  <input type="hidden" value="ProductId" name="productId" />
+  <input type="hidden" value="SplitId" name="splitId" />
+  <input type="hidden" value="ProcessId" name="processId" />
+  <div class="work-area-panel">
+    <div class="form-group" [ngClass]="type1Class()">
+      <label class="form-control-label " for="typePage1"> Tipo documental 1</label>
+      <div class="input-group">
+        <input type="text" form-control class="form-control form-control-warning" (keyup)="onKeydownHandler($event)" (ngModelChange)="ChangeType1($event)"
+          [(ngModel)]="type1" maxlength="2" autocomplete="off" name="selectedTypeId1" autofocus="autofocus" [disabled]="processing"
+          #type1Text id="typePage1"/>
+        <span class="input-group-addon" style="width:80%;">
+          {{type1}} - {{typeLabel1}}
+        </span>
+      </div>
+    </div>
+    
+    <div class="form-group" [ngClass]="type2Class()">
+        <label class="form-control-label " for="typePage2"> Tipo documental 1</label>
+        <div class="input-group">
+          <input type="text" form-control class="form-control form-control-warning" (keyup)="onKeydownHandler($event)" (ngModelChange)="ChangeType2($event)"
+            [(ngModel)]="type2" maxlength="2" autocomplete="off" name="selectedTypeId2" autofocus="autofocus" [disabled]="processing"
+            #type1Text id="typePage2"/>
+          <span class="input-group-addon" style="width:80%;">
+            {{type2}} - {{typeLabel2}}
+          </span>
+        </div>
+      </div>
+
+      <div *ngIf="documentalTypes3.length>0" class="form-group" [ngClass]="type3Class()">
+          <label class="form-control-label " for="typePage3"> Tipo documental 1</label>
+          <div class="input-group">
+            <input type="text" form-control class="form-control form-control-warning" (keyup)="onKeydownHandler($event)" (ngModelChange)="ChangeType3($event)"
+              [(ngModel)]="type3" maxlength="2" autocomplete="off" name="selectedTypeId3" autofocus="autofocus" [disabled]="processing"
+              #type1Text id="typePage3"/>
+            <span class="input-group-addon" style="width:80%;">
+              {{type3}} - {{typeLabel3}}
+            </span>
+          </div>
+        </div>
+    <div class="clearfix"></div>
+    <br/>
+    <div class="btn-group">
+      <div *ngIf="error && error.length > 0" class="alert alert-danger">
+        <strong>Error!</strong> {{error}}
+      </div>
+      <button type="submit" class="btn btn-success" [disabled]="processing">
+        <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">.</span>
+        Guardar
+      </button>
+    </div>
+  </div>
+
+</form>
+
+<div *ngIf="showContinueModal" [config]="{ backdrop: 'static', show: true }" (onHidden)="onHidden()" bsModal #continueModal="bs-modal" class="modal fade"
+  tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">.: Confirmación</h5>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="hideModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Desea tipificar el siguiente proceso del producto {{productId}}?</p>
+        <button type="button" class="btn btn-default" (click)="goToList()">Ir a tipificación</button>
+        <button type="button" class="btn btn-primary" (click)="continue()">Continuar</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div *ngIf="showErrorModal" class="modal fade" bsModal #staticModal="bs-modal" #errorModal="bs-modal" [config]="{backdrop: 'static', show: true}" tabindex="-1" role="dialog"
+aria-labelledby="mySmallModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-sm">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">.: Alerta</h5>
+    </div>
+    <div class="modal-body">
+        <p>{{error}}}</p>
+      <button type="button" class="btn btn-default" (click)="goToList()">Ir a tipificación</button>
+    </div>
+  </div>
+</div>
+</div>

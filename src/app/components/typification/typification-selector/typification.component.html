@@ -1,0 +1,81 @@
+<div class="card main-container">
+    <div class="card-header">
+        <div class="d-flex justify-content-between ">
+            <div class="p-2">
+                <h4>Tipificación</h4>
+            </div>
+            <div *ngIf="warning" class="alert alert-warning p-2">
+                <strong>Alerta!</strong> {{warning}}
+            </div>
+        </div>
+    </div>
+    <div class="card-block">
+        <div class="container">
+            <br>
+            <div *ngFor="let product of products; index as idx">
+                <div class="typification-item ">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                <div class="input-group" aria-label="First group">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" (click)="product.isCollapsed = !product.isCollapsed" [attr.aria-expanded]="!product.isCollapsed"
+                                            aria-controls="collapseExample">
+                                            +
+                                        </button>
+                                    </span>
+                                    <span class="input-group-addon" id="btnGroupAddon">
+
+                                        <strong>{{product.product.productId + ' - ' + product.product.productName}}</strong>
+                                    </span>
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="btnGroupAddon" *ngIf="product.processes.length > 0">
+                                        {{product.processes.length + ' pendiente(s) ' }}
+                                    </span>
+                                    <span class="input-group-addon" id="btnGroupAddon">
+                                        {{product.pendingCount + ' disponibles(s) ' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                <div class="input-group ">
+                                </div>
+                                <div class="input-group ">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" type="button" [disabled]="product.pendingCount == 0" (click)="assignProcess(product.product.productId)">
+                                            Tipificar nuevo proceso!
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="collapseExample" [ngbCollapse]="!product.isCollapsed">
+                        <hr>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                    <div class="btn-group ">
+                                        <button class="btn btn-outline-danger" type="button" *ngFor="let process of product.processes" [routerLink]="['/typify', product.product.productId]"
+                                            [queryParams]="{ processId: process.processId }">
+                                            {{process.fileName}}
+                                        </button>
+                                    </div>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Nombre del archivo">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary" type="button" [disabled]="product.pendingCount == 0">Ir a archivo!</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
