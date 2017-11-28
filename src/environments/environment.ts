@@ -5,6 +5,7 @@
 
 export const environment = {
   production: false,
-  origin: 'http://localhost:61259'
-  //  origin: 'http://192.169.154.97/ICTypificationApi'
+  // origin: 'http://localhost:61259'
+   origin: 'http://192.169.154.97/ICTypificationApi'
+  // origin: 'http://192.169.154.97/ICTypificationApi'
 };

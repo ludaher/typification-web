@@ -5,7 +5,7 @@
         <div class="col-md-5 fill">
           <div class="card main-container">
             <div class="card-header">
-              <b>Tipificación</b>
+              <b>Validación</b>
             </div>
             <div class="card-block">
               <br>
@@ -18,7 +18,7 @@
                   </app-pdf-navigator>
                 </div>
                 <div class=" col-md-12">
-                    <div class="checkbox">
+                  <div class="checkbox">
                     <label>
                       <input type="checkbox" [(ngModel)]="loadAllPdf" (ngModelChange)="loadAllPdfChange($event)"> pdf completo
                     </label>
@@ -46,15 +46,22 @@
                 <span style="color:white; white-space:nowrap;">{{pdfSizeLoaded}} / {{pdfSize}}</span>
               </progressbar> -->
               <div *ngIf="!pdfLoaded" class="progress">
-                  <div class="progress-bar progress-bar-striped active" role="progressbar"
-                  aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                    cargando
-                  </div>
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+                  style="width:100%">
+                  Cargando...
                 </div>
-              <pdf-viewer [src]="pdfSrc" [render-text]="true" style="display: block;" [show-all]="false" [render-text]="false" [stick-to-page]="false"
-                [(page)]="pdfPage" [original-size]="false" [fit-to-page]="true" [zoom]='pdfZoom' (after-load-complete)="onLoadPdfComplete($event)"
-                (on-progress)="onProgressPdf($event)">
-              </pdf-viewer>
+              </div>
+              <div *ngIf="pdfLoaded" class="progress">
+                <div class="progress-bar  bg-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                  {{page}} / {{totalPdfPages}} {{pdfRotate}}°
+                </div>
+              </div>
+              <div #pdfContent [ngClass]="rotation">
+                <pdf-viewer [src]="pdfSrc" [render-text]="true" style="display: block;" [show-all]="false" [render-text]="false" [stick-to-page]="false"
+                  [(page)]="pdfPage" [original-size]="false" [fit-to-page]="true" [zoom]='pdfZoom' (after-load-complete)="onLoadPdfComplete($event)"
+                  (on-progress)="onProgressPdf($event)" (rotation)="pdfRotate">
+                </pdf-viewer>
+              </div>
             </div>
           </div>
         </div>

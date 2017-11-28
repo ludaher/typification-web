@@ -1,7 +1,7 @@
 import {
   Injectable, Component, Input, Output,
   EventEmitter, OnInit, ViewChild, ElementRef,
-  TemplateRef
+  TemplateRef, OnDestroy
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ValidationService } from '../../../../services/typification/validation.service';
@@ -18,11 +18,30 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
   templateUrl: './validate-form.component.html',
   styleUrls: ['./validate-form.component.css']
 })
-export class ValidateFormComponent implements OnInit {
+export class ValidateFormComponent implements OnInit, OnDestroy {
+
+  documentsSub: any;
+  saveSub: any;
+  assignProcessSub: any;
 
   type1: string;
   type2: string;
   type3: string;
+
+  statusType1: string;
+  statusType2: string;
+  statusType3: string;
+
+  type1Typification1: string;
+  type2Typification1: string;
+  type3Typification1: string;
+
+  type1Typification2: string;
+  type2Typification2: string;
+  type3Typification2: string;
+
+  typification: UserTypification;
+
   private currentProcess: TypificationProcess;
   private pdfPage: number;
 
@@ -33,7 +52,9 @@ export class ValidateFormComponent implements OnInit {
   set pdfLoaded(value: boolean) {
     this.processing = !value;
     if (value === true) {
-      this.type1Text.nativeElement.focus();
+      setTimeout(() => {
+        this.type1Text.nativeElement.focus();
+      }, 300);
     }
   }
   @Input('page')
@@ -52,6 +73,7 @@ export class ValidateFormComponent implements OnInit {
   @Output() onKeydown = new EventEmitter<any>();
 
   @ViewChild('type1Text') private type1Text: ElementRef;
+  @ViewChild('continueButton') continueButton: ElementRef;
   @ViewChild('continueModal') continueModal: ModalDirective;
   @ViewChild('errorModal') errorModal: ModalDirective;
 
@@ -80,7 +102,7 @@ export class ValidateFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.validationService
+    this.documentsSub = this.validationService
       .getDocumentTypes(this.productId)
       .subscribe(documentalTypes => {
         for (let i = 0; i < documentalTypes.length; i++) {
@@ -94,6 +116,12 @@ export class ValidateFormComponent implements OnInit {
           }
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.documentsSub.unsubscribe();
+    this.assignProcessSub.unsubscribe();
+    this.saveSub.unsubscribe();
   }
 
   ChangeType1($event): void {
@@ -116,14 +144,17 @@ export class ValidateFormComponent implements OnInit {
       return;
     }
     this.processing = true;
-    this.validationService
+    if (this.saveSub) { this.saveSub.unsubscribe(); }
+    this.saveSub = this.validationService
       .saveTypification(this.processId, this.pdfPage, this.type1, this.type2, this.type3)
       .subscribe(
       (data) => {
         this.processing = false;
         if (data.completed === true) {
           this.showContinueModal = true;
-          this.assignProcess(this.productId);
+          setTimeout(() => {
+            this.continueButton.nativeElement.focus();
+          }, 500);
           return;
         }
         if (data.pendingPage > 0) {
@@ -134,21 +165,27 @@ export class ValidateFormComponent implements OnInit {
         this.updateTypifications();
         this.onTypificationSaved.emit({ success: true, page: this.pdfPage + 1 });
       },
-      () => {
-        this.error = 'Error almacenando la tipificación';
+      (err) => {
+        this.error = err.error.error;
         this.processing = false;
       }
       );
   }
 
   assignProcess(productId) {
-    this.validationService
+    if (this.assignProcessSub) { this.assignProcessSub.unsubscribe(); }
+    this.assignProcessSub = this.validationService
       .assignProcess(productId)
       .subscribe(
-      data => this.router.navigate(['/typify', productId], { queryParams: { processId: data } }),
+      data => {
+        this.router.navigate(['/validate', productId], { queryParams: { processId: data } });
+        this.showContinueModal = false;
+        this.onTypificationSaved.emit({ success: true, page: 1 });
+      },
       err => {
         this.showContinueModal = false;
         this.showError(err.error.error);
+        this.processing = false;
       }
       );
   }
@@ -167,21 +204,54 @@ export class ValidateFormComponent implements OnInit {
   }
 
   refreshDocumentalTypes() {
-    if (!this.currentProcess) { return; }
-    const typification = this.currentProcess.typifications.find(x => x.page === this.pdfPage);
-    if (!typification) {
+    if (!this.currentProcess || !this.pdfPage) { return; }
+    this.typification = this.currentProcess.typifications.find(x => x.page === this.pdfPage);
+    if (!this.typification) {
       this.type1 = '';
       this.type2 = '';
       this.type3 = '';
     } else {
-      this.type1 = typification.documentTypeId1;
-      this.type2 = typification.documentTypeId2;
-      this.type3 = typification.documentTypeId3;
+      this.type1 = this.typification.documentTypeId1;
+      this.type2 = this.typification.documentTypeId2;
+      this.type3 = this.typification.documentTypeId3;
     }
 
-    this.ChangeType1(this.type1);
-    this.ChangeType2(this.type2);
-    this.ChangeType3(this.type3);
+    if (this.typification.typification1 && this.typification.typification2) {
+
+      if (this.typification.typification1.documentTypeId1 === this.typification.typification2.documentTypeId1) {
+        this.statusType1 = 'fa-check';
+      } else {
+        this.statusType1 = 'fa-times';
+      }
+      if (this.typification.typification1.documentTypeId2 === this.typification.typification2.documentTypeId2) {
+        this.statusType2 = 'fa-check';
+      } else {
+        this.statusType2 = 'fa-times';
+      }
+      if (this.typification.typification1.documentTypeId3 === this.typification.typification2.documentTypeId3) {
+        this.statusType3 = 'fa-check';
+      } else {
+        this.statusType3 = 'fa-times';
+      }
+    } else {
+      this.statusType1 = this.statusType2 = this.statusType3 = 'fa-check';
+    }
+
+    if (this.typification.typification1) {
+      this.type1Typification1 = this.typification.typification1.documentTypeId1;
+      this.type2Typification1 = this.typification.typification1.documentTypeId2;
+      this.type3Typification1 += this.typification.typification1.documentTypeId3;
+    }
+    if (this.typification.typification2) {
+      this.type1Typification2 = this.typification.typification2.documentTypeId1;
+      this.type2Typification2 = this.typification.typification2.documentTypeId2;
+      this.type3Typification2 += this.typification.typification2.documentTypeId3;
+    }
+
+    this.ChangeType1(this.type1 ? this.type1 : '');
+    this.ChangeType2(this.type2 ? this.type2 : '');
+    this.ChangeType3(this.type3 ? this.type3 : '');
+
     setTimeout(() => {
       this.type1Text.nativeElement.focus();
     }, 300);
@@ -189,7 +259,7 @@ export class ValidateFormComponent implements OnInit {
 
   type1Class() {
     this.validForm = false;
-    if (this.type1 === '') {
+    if (this.type1 === '' || (this.type1 !== this.type1Typification1 && this.type1 !== this.type1Typification2)) {
       return 'has-danger';
     }
     if (!this.type1) {
@@ -203,7 +273,8 @@ export class ValidateFormComponent implements OnInit {
   }
 
   type2Class() {
-    if (this.type2 !== '' && this.typeLabel2 === this.emptyLabel) {
+    if ((this.type2 !== '' && this.typeLabel2 === this.emptyLabel)
+      || (this.type2 !== this.type2Typification1 && this.type2 !== this.type2Typification2)) {
       this.validForm = false;
       return 'has-warning';
     }
@@ -211,7 +282,8 @@ export class ValidateFormComponent implements OnInit {
   }
 
   type3Class() {
-    if (this.type3 !== '' && this.typeLabel3 === this.emptyLabel) {
+    if ((this.type3 !== '' && this.typeLabel3 === this.emptyLabel)
+      || (this.type3 !== this.type3Typification1 && this.type3 !== this.type3Typification2)) {
       this.validForm = false;
       return 'has-warning';
     }
@@ -232,6 +304,6 @@ export class ValidateFormComponent implements OnInit {
   }
 
   goToList() {
-    this.router.navigate(['/typification']);
+    this.router.navigate(['/validation']);
   }
 }

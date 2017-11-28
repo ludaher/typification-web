@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostListener, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { ValidationService } from '../../../services/typification/validation.service';
@@ -13,8 +13,13 @@ import { UserTypification } from '../../../model/typification/typification.model
   templateUrl: './validate.component.html',
   styleUrls: ['./validate.component.css']
 })
-export class ValidateComponent implements OnInit {
-  sub: any;
+
+export class ValidateComponent implements OnInit, OnDestroy {
+
+  productsSub: any;
+  paramsSub: any;
+  querySub: any;
+
   page: number;
   pdfPage: number;
   totalPdfPages: number;
@@ -28,28 +33,40 @@ export class ValidateComponent implements OnInit {
   pdfSize: number;
   pdfSizeLoaded: number;
   loadAllPdf: boolean;
+  pdfRotate: number;
+  rotation: string;
 
   @ViewChild('pdfPanel', { read: ElementRef }) private pdfPanel: ElementRef;
-
+  @ViewChild('pdfContent', { read: ElementRef }) private pdfContent: ElementRef;
   constructor(private activatedRoute: ActivatedRoute,
-    private validationService: ValidationService) { }
+    private typificationService: ValidationService) { }
 
   ngOnInit() {
     // this.loadHotkeys();
     this.loadParameters();
-    this.pdfZoom = 0.5;
-    this.pdfLoaded = false;
-    this.loadAllPdf = localStorage.getItem('loadAllPdf') === 'true';
+  }
+
+  ngOnDestroy() {
+    this.productsSub.unsubscribe();
+    this.querySub.unsubscribe();
+    this.paramsSub.unsubscribe();
   }
 
   loadParameters(): void {
-    this.sub = this.activatedRoute.params.subscribe(params => {
+    this.paramsSub = this.activatedRoute.params.subscribe(params => {
+      if (this.querySub) { this.querySub.subscribe(); }
       this.productId = +params['productId']; // (+) converts string 'id' to a number
-      this.activatedRoute
+      this.querySub = this.activatedRoute
         .queryParams
         .subscribe(queryParams => {
+          if (this.productsSub) { this.querySub.subscribe(); }
           // Defaults to 0 if no query param provided.
           this.processId = queryParams['processId'] || 0;
+          this.pdfZoom = 0.5;
+          this.pdfRotate = 0;
+          this.pdfLoaded = false;
+          this.loadAllPdf = localStorage.getItem('loadAllPdf') === 'true';
+          this.pdfPage = this.page = 1;
           this.loadProduct();
         });
       // In a real app: dispatch action to load the details here.
@@ -57,7 +74,7 @@ export class ValidateComponent implements OnInit {
   }
 
   loadProduct() {
-    this.validationService.getTypificationProcess(this.processId)
+    this.productsSub = this.typificationService.getTypificationProcess(this.processId)
       .subscribe(
       typificationProcess => {
         if (typificationProcess == null) { return; }
@@ -90,7 +107,7 @@ export class ValidateComponent implements OnInit {
   }
 
   loadProcessPdf() {
-    if (this.loadAllPdf === false) {
+    if (this.loadAllPdf === true) {
       this.pdfSrc = `${environment.origin}/api/repository/${this.processId}`;
     }
   }
@@ -123,7 +140,7 @@ export class ValidateComponent implements OnInit {
     localStorage.setItem('loadAllPdf', event);
     if (event === true) {
       this.pdfPage = this.page;
-      this.pdfLoaded = true;
+      this.pdfLoaded = false;
       this.loadProcessPdf();
     } else {
       this.loadPdfPage();
@@ -138,6 +155,11 @@ export class ValidateComponent implements OnInit {
       return;
     } else if (e.key.toLowerCase() === 'z') {
       this.pdfZoom = 1;
+    } else if (e.key.toLowerCase() === 'r') {
+      this.rotation = (this.rotation === 'default' ? 'rotated' : 'default');
+      // this.pdfRotate = this.pdfRotate >= 180 ? 0 : this.pdfRotate + 90;
+      // boxopen.style.animation = "rotate 2s";
+      // boxopen.style.webkitAnimation = "rotate 2s";
     } else if (e.key.toLowerCase() === 'a') {
       this.pdfZoom = 0.5;
     } else if (e.key.toLowerCase() === '+' && this.pdfZoom < 2) {

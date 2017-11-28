@@ -24,6 +24,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 // RECOMMENDED (doesn't work with system.js)
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { PopoverModule } from 'ngx-bootstrap/popover';
 
 /// Services
 import { TypificationService } from './services/typification/typification.service';
@@ -56,6 +57,7 @@ import { ValidateFormComponent } from './components/validation/validate/validate
     HttpClientModule,
     PdfViewerModule,
     FormsModule,
+    PopoverModule.forRoot(),
     ProgressbarModule.forRoot(),
     ModalModule.forRoot()
   ],

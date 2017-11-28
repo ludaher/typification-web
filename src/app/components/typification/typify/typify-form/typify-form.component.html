@@ -66,7 +66,7 @@
       <div class="modal-body">
         <p>Desea tipificar el siguiente proceso del producto {{productId}}?</p>
         <button type="button" class="btn btn-default" (click)="goToList()">Ir a tipificación</button>
-        <button type="button" class="btn btn-primary" (click)="continue()">Continuar</button>
+        <button type="button" class="btn btn-primary" (click)="continue()" #continueButton>Continuar</button>
 
       </div>
     </div>
@@ -82,7 +82,7 @@ aria-labelledby="mySmallModalLabel" aria-hidden="true">
         <h5 class="modal-title">.: Alerta</h5>
     </div>
     <div class="modal-body">
-        <p>{{error}}}</p>
+        <p>{{error}}</p>
       <button type="button" class="btn btn-default" (click)="goToList()">Ir a tipificación</button>
     </div>
   </div>

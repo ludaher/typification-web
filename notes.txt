@@ -19,4 +19,4 @@ add bootstrap scripts in angular-cli.json
 
 ------------------------publish-----------------------
 ng build --prod --env=
-ng build --prod --environment=qa --base-href /TypificationWeb
+ng build --prod --environment=qa --base-href /TypificationWeb/

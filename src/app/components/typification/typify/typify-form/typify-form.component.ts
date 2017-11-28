@@ -1,7 +1,7 @@
 import {
   Injectable, Component, Input, Output,
   EventEmitter, OnInit, ViewChild, ElementRef,
-  TemplateRef
+  TemplateRef, OnDestroy
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TypificationService } from '../../../../services/typification/typification.service';
@@ -19,7 +19,12 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
   styleUrls: ['./typify-form.component.css']
 })
 
-export class TypifyFormComponent implements OnInit {
+export class TypifyFormComponent implements OnInit, OnDestroy {
+
+  documentsSub: any;
+  saveSub: any;
+  assignProcessSub: any;
+
   type1: string;
   type2: string;
   type3: string;
@@ -33,7 +38,9 @@ export class TypifyFormComponent implements OnInit {
   set pdfLoaded(value: boolean) {
     this.processing = !value;
     if (value === true) {
-      this.type1Text.nativeElement.focus();
+      setTimeout(() => {
+        this.type1Text.nativeElement.focus();
+      }, 300);
     }
   }
   @Input('page')
@@ -52,6 +59,7 @@ export class TypifyFormComponent implements OnInit {
   @Output() onKeydown = new EventEmitter<any>();
 
   @ViewChild('type1Text') private type1Text: ElementRef;
+  @ViewChild('continueButton') continueButton: ElementRef;
   @ViewChild('continueModal') continueModal: ModalDirective;
   @ViewChild('errorModal') errorModal: ModalDirective;
 
@@ -80,7 +88,7 @@ export class TypifyFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.typificationService
+    this.documentsSub = (this.typificationService
       .getDocumentTypes(this.productId)
       .subscribe(documentalTypes => {
         for (let i = 0; i < documentalTypes.length; i++) {
@@ -93,7 +101,13 @@ export class TypifyFormComponent implements OnInit {
             this.documentalTypes3.push(documentalTypes[i]);
           }
         }
-      });
+      }));
+  }
+
+  ngOnDestroy() {
+    this.documentsSub.unsubscribe();
+    this.assignProcessSub.unsubscribe();
+    this.saveSub.unsubscribe();
   }
 
   ChangeType1($event): void {
@@ -115,18 +129,22 @@ export class TypifyFormComponent implements OnInit {
     if (!this.validForm || this.processing === true) {
       return;
     }
-    this.processing = true;
-    this.typificationService
+    if (this.saveSub) { this.saveSub.unsubscribe(); }
+    this.saveSub = (this.typificationService
       .saveTypification(this.processId, this.pdfPage, this.type1, this.type2, this.type3)
       .subscribe(
       (data) => {
-        this.processing = false;
+        // this.processing = false;
         if (data.completed === true) {
           this.showContinueModal = true;
-          this.assignProcess(this.productId);
+          setTimeout(() => {
+            console.log('continue');
+            this.continueButton.nativeElement.focus();
+          }, 500);
           return;
         }
         if (data.pendingPage > 0) {
+          console.log('Pending page ' + this.pdfPage);
           this.pdfPage = data.pendingPage;
           this.onTypificationSaved.emit({ success: true, page: this.pdfPage });
           return;
@@ -138,16 +156,21 @@ export class TypifyFormComponent implements OnInit {
         this.error = 'Error almacenando la tipificación';
         this.processing = false;
       }
-      );
+      ));
   }
 
   assignProcess(productId) {
-    this.typificationService
+    if (this.assignProcessSub) { this.assignProcessSub.unsubscribe(); }
+    this.assignProcessSub = this.typificationService
       .assignProcess(productId)
       .subscribe(
-      data => this.router.navigate(['/typify', productId], { queryParams: { processId: data } }),
+      data => {
+        this.router.navigate(['/typify', productId], { queryParams: { processId: data } });
+        this.showContinueModal = false;
+      },
       err => {
         this.showContinueModal = false;
+        this.processing = false;
         this.showError(err.error.error);
       }
       );
@@ -155,7 +178,7 @@ export class TypifyFormComponent implements OnInit {
 
   updateTypifications() {
     if (!this.currentProcess) { return; }
-    const typification = new UserTypification('', this.pdfPage, this.type1, this.type2, this.type3);
+    const typification = new UserTypification('', this.pdfPage, this.type1, this.type2, this.type3, null, null);
     const oldTypification = this.currentProcess.typifications.find(x => x.page === typification.page);
     if (!oldTypification) {
       this.currentProcess.typifications.push(typification);
