@@ -13,15 +13,17 @@ import { AuthService } from '../authentication/auth.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  constructor(public auth: AuthService) {}
+  constructor(public auth: AuthService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-      console.log('Agregando el token al header');
-    request = request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${this.auth.getToken()}`
-      }
-    });
+    console.log('Agregando el token al header');
+    if (this.auth.isLoggedIn()) {
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${this.auth.getAuthorizationHeaderValue()}`
+        }
+      });
+    }
     request = request.clone({
       setHeaders: {
         'Content-Type': `application/json`

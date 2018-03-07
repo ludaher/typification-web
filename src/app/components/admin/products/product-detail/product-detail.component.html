@@ -1,0 +1,113 @@
+<!-- <div class="card main-container">
+  <div class="card-block" *ngIf="viewList"> -->
+
+<br>
+<form action="/ImaginCrudTypification/Product/Edit" method="post" class="container" (ngSubmit)="f.form.valid && onSubmit()"
+  #f="ngForm" novalidate>
+  <div class="row">
+    <div class="form-group col-md-6" [ngClass]="{ 'has-danger': f.submitted && productName.invalid }">
+      <label for="Name">Nombre *</label>
+      <input type="text" class="form-control" maxlength="100" required="required" [(ngModel)]="product.productName" name="productName"
+        id="ProductName" #productName="ngModel">
+      <!-- <div *ngIf="productName.invalid && (productName.dirty || productName.touched)" class="alert alert-danger">
+        <div *ngIf="productName.errors.required">
+          El nombre es requerido
+        </div> 
+      </div>-->
+    </div>
+    <div class="form-group col-md-6" [ngClass]="{ 'has-danger': f.submitted && productDescription.invalid }">
+      <label for="Name">Descripción</label>
+      <input type="text" class="form-control" [(ngModel)]="product.productDescription" maxlength="100" required="" name="ProductDescription"
+        #productDescription="ngModel">
+    </div>
+    <div class="form-group col-md-6" [ngClass]="{ 'has-danger': f.submitted && numberOfTypifications.invalid }">
+      <label for="Name">Número de tipificaciones</label>
+      <input type="number" class="form-control" [(ngModel)]="product.numberOfTypifications" maxlength="1" max="9" required="" name="NumberOfTypifications"
+        #numberOfTypifications="ngModel" min="1" max="2">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="isActive" class="col-md-12 text-center">
+        Activo
+      </label>
+      <label class="form-control">
+        <input id="Active" type="checkbox" [(ngModel)]="product.active" name="Active">
+      </label>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="isActive" class="col-md-12 text-center">
+        Generar archivos
+      </label>
+      <label class="form-control">
+        <input checked="checked" [(ngModel)]="product.generateFilesByType" id="GenerateFilesByType" name="GenerateFilesByType" type="checkbox">
+      </label>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="isActive" class="col-md-12 text-center">
+        Tipo de generación de archivos
+      </label>
+      <select ng-model="FileGeneratorType" class="form-control" name="FileGeneratorType" [(ngModel)]="product.fileGeneratorType">
+        <option value="? undefined:undefined ?"></option>
+        <option value="1" selected="selected">Agrupar todos los tipos documentales</option>
+        <option value="2">Agrupar secuencialmente los anexos</option>
+      </select>
+    </div>
+  </div>
+  <ul class="nav navbar-nav navbar-right">
+    <li>
+      <button type="submit" class="btn btn-success navbar-btn">Guardar</button>
+    </li>
+  </ul>
+</form>
+<br>
+<hr>
+<div class="container ">
+  <div class="card transparent">
+    <div class="card-header principal">
+      Tipos documentales
+    </div>
+    <div class="card-block container">
+      <br/>
+      <div class="row">
+        <div class="form-group col-md-12">
+          <div class="input-group">
+            <label class="input-group-addon" for="documentalTypesFile">Seleccione un archivo</label>
+            <input type="text" form-control class="form-control " disabled="disabled"
+                [(ngModel)]="fileName" />
+            <button type="button" class="btn btn-sm btn-danger" (click)="clearFile()">X</button>
+            <button type="button" class="btn btn-info navbar-btn" (click)="uploadFile()">Cargar</button>
+          </div>
+        </div>
+        <input type="file" class="form-control" (change)="onFileChange($event)" #fileInput id="documentalTypesFile">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Valor</th>
+              <th>Nombre</th>
+              <th>Grupo</th>
+              <th>Obligatorio</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let type of documentalTypes">
+              <td>{{type.value}}</td>
+              <td>{{type.label}}</td>
+              <td>{{type.group}}</td>
+              <td>{{type.required}}</td>
+              <td>
+                <input type="checkbox" [(ngModel)]="type.required" (click)="changeRequired(type)" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <br>
+  </div>
+  <br>
+</div>
+<!-- </div>
+  <div class="card-footer text-muted" *ngIf="viewList">
+    <app-pager (goToPage)="goToPage($event)" [pagesToShow]="pagesToShow" [page]="page" [perPage]="perPage" [count]="total" [loading]="loading"></app-pager>
+  </div>
+</div> -->

@@ -21,6 +21,16 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
 
 export class TypifyFormComponent implements OnInit, OnDestroy {
 
+  constructor(protected typificationService: TypificationService,
+    protected router: Router) {
+    this.documentalTypes1 = new Array();
+    this.documentalTypes2 = new Array();
+    this.documentalTypes3 = new Array();
+    this.processing = false;
+  }
+
+  navigateAfterAssign = '/typify';
+
   documentsSub: any;
   saveSub: any;
   assignProcessSub: any;
@@ -28,8 +38,8 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
   type1: string;
   type2: string;
   type3: string;
-  private currentProcess: TypificationProcess;
-  private pdfPage: number;
+  currentProcess: TypificationProcess;
+  pdfPage: number;
 
   @Input() productId: number;
   @Input() processId: number;
@@ -58,7 +68,7 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
   @Output() onTypificationSaved = new EventEmitter<any>();
   @Output() onKeydown = new EventEmitter<any>();
 
-  @ViewChild('type1Text') private type1Text: ElementRef;
+  @ViewChild('type1Text') type1Text: ElementRef;
   @ViewChild('continueButton') continueButton: ElementRef;
   @ViewChild('continueModal') continueModal: ModalDirective;
   @ViewChild('errorModal') errorModal: ModalDirective;
@@ -79,18 +89,11 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
   showErrorModal: boolean;
   showContinueModal: boolean;
 
-  constructor(private typificationService: TypificationService,
-    private router: Router) {
-    this.documentalTypes1 = new Array();
-    this.documentalTypes2 = new Array();
-    this.documentalTypes3 = new Array();
-    this.processing = false;
-  }
-
   ngOnInit() {
     this.documentsSub = (this.typificationService
       .getDocumentTypes(this.productId)
-      .subscribe(documentalTypes => {
+      .subscribe(result => {
+        const documentalTypes = result.resultList;
         for (let i = 0; i < documentalTypes.length; i++) {
           if (documentalTypes[i].group == null
             || documentalTypes[i].group === 0) {
@@ -101,27 +104,31 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
             this.documentalTypes3.push(documentalTypes[i]);
           }
         }
+        if (!this.type1) { return; }
+        this.ChangeType1(this.type1);
+        this.ChangeType2(this.type2);
+        this.ChangeType3(this.type3);
       }));
   }
 
   ngOnDestroy() {
-    this.documentsSub.unsubscribe();
-    this.assignProcessSub.unsubscribe();
-    this.saveSub.unsubscribe();
+    if (this.assignProcessSub) { this.assignProcessSub.unsubscribe(); }
+    if (this.documentsSub) { this.documentsSub.unsubscribe(); }
+    if (this.saveSub) { this.saveSub.unsubscribe(); }
   }
 
   ChangeType1($event): void {
-    const tipo = this.documentalTypes1.find(x => x.value.toUpperCase() === $event.toUpperCase());
+    const tipo = ($event == null) ? undefined : this.documentalTypes1.find(x => x.value.toUpperCase() === $event.toUpperCase());
     this.typeLabel1 = (tipo) ? tipo.label : this.emptyLabel;
   }
 
   ChangeType2($event): void {
-    const tipo = this.documentalTypes2.find(x => x.value.toUpperCase() === $event.toUpperCase());
+    const tipo = ($event == null) ? undefined : this.documentalTypes2.find(x => x.value.toUpperCase() === $event.toUpperCase());
     this.typeLabel2 = (tipo) ? tipo.label : this.emptyLabel;
   }
 
   ChangeType3($event): void {
-    const tipo = this.documentalTypes3.find(x => x.value.toUpperCase() === $event.toUpperCase());
+    const tipo = ($event == null) ? undefined : this.documentalTypes3.find(x => x.value.toUpperCase() === $event.toUpperCase());
     this.typeLabel3 = (tipo) ? tipo.label : this.emptyLabel;
   }
 
@@ -129,33 +136,32 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
     if (!this.validForm || this.processing === true) {
       return;
     }
+    this.processing = true;
     if (this.saveSub) { this.saveSub.unsubscribe(); }
     this.saveSub = (this.typificationService
       .saveTypification(this.processId, this.pdfPage, this.type1, this.type2, this.type3)
       .subscribe(
-      (data) => {
-        // this.processing = false;
-        if (data.completed === true) {
-          this.showContinueModal = true;
-          setTimeout(() => {
-            console.log('continue');
-            this.continueButton.nativeElement.focus();
-          }, 500);
-          return;
+        (data) => {
+          this.processing = false;
+          if (data.completed === true) {
+            this.showContinueModal = true;
+            setTimeout(() => {
+              this.continueButton.nativeElement.focus();
+            }, 500);
+            return;
+          }
+          if (data.pendingPage > 0) {
+            this.pdfPage = data.pendingPage;
+            this.onTypificationSaved.emit({ success: true, page: this.pdfPage });
+            return;
+          }
+          this.updateTypifications();
+          this.onTypificationSaved.emit({ success: true, page: this.pdfPage + 1 });
+        },
+        (err) => {
+          this.error = err.error.error;
+          this.processing = false;
         }
-        if (data.pendingPage > 0) {
-          console.log('Pending page ' + this.pdfPage);
-          this.pdfPage = data.pendingPage;
-          this.onTypificationSaved.emit({ success: true, page: this.pdfPage });
-          return;
-        }
-        this.updateTypifications();
-        this.onTypificationSaved.emit({ success: true, page: this.pdfPage + 1 });
-      },
-      () => {
-        this.error = 'Error almacenando la tipificación';
-        this.processing = false;
-      }
       ));
   }
 
@@ -164,21 +170,21 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
     this.assignProcessSub = this.typificationService
       .assignProcess(productId)
       .subscribe(
-      data => {
-        this.router.navigate(['/typify', productId], { queryParams: { processId: data } });
-        this.showContinueModal = false;
-      },
-      err => {
-        this.showContinueModal = false;
-        this.processing = false;
-        this.showError(err.error.error);
-      }
+        data => {
+          this.router.navigate([this.navigateAfterAssign, productId], { queryParams: { processId: data } });
+          this.showContinueModal = false;
+        },
+        err => {
+          this.showContinueModal = false;
+          this.processing = false;
+          this.showError(err.error.error);
+        }
       );
   }
 
   updateTypifications() {
     if (!this.currentProcess) { return; }
-    const typification = new UserTypification('', this.pdfPage, this.type1, this.type2, this.type3, null, null);
+    const typification = new UserTypification('', this.pdfPage, this.type1, this.type2, this.type3, null, null, true);
     const oldTypification = this.currentProcess.typifications.find(x => x.page === typification.page);
     if (!oldTypification) {
       this.currentProcess.typifications.push(typification);

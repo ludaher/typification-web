@@ -1,0 +1,93 @@
+<table class="table table-hover ng-scope table-bordered">
+  <thead>
+    <tr class="">
+      <th class="text-right">
+        <a (click)="order('ProductId')" title="Ordenar">
+          #
+          <fa name="angle-down" *ngIf="orderColumn == 'ProductId' && descendingOrder == true"></fa>
+          <fa name="angle-up" *ngIf="orderColumn == 'ProductId' && descendingOrder == false"></fa>
+        </a>
+      </th>
+      <th class="">
+        <a (click)="order('ProductName')" title="Ordenar">
+          Nombre
+          <fa name="angle-down" *ngIf="orderColumn == 'ProductName' && descendingOrder == true"></fa>
+          <fa name="angle-up" *ngIf="orderColumn == 'ProductName' && descendingOrder == false"></fa>
+        </a>
+      </th>
+
+      <th class="d-none d-sm-table-cell">
+        <a (click)="order('NumberOfTypifications')" title="Ordenar">
+          Tipificaciones
+          <fa name="angle-down" *ngIf="orderColumn == 'NumberOfTypifications' && descendingOrder == true"></fa>
+          <fa name="angle-up" *ngIf="orderColumn == 'NumberOfTypifications' && descendingOrder == false"></fa>
+        </a>
+      </th>
+
+      <th class="">
+        Activo
+      </th>
+
+      <th class="d-none d-sm-table-cell">
+        <a (click)="order('ModifiedOn')" title="Ordenar">
+          Última modificación
+          <fa name="angle-down" *ngIf="orderColumn == 'ModifiedOn' && descendingOrder == true"></fa>
+          <fa name="angle-up" *ngIf="orderColumn == 'ModifiedOn' && descendingOrder == false"></fa>
+        </a>
+      </th>
+      <!-- <th></th> -->
+    </tr>
+    <tr class="filter">
+      <th class="text-right">
+        <input width="100%" type="text" class="text-right" [(ngModel)]="numberFilter" (keyup.enter)="filter()" />
+      </th>
+      <th class="">
+        <input width="100%" type="text" [(ngModel)]="nameFilter" (keyup.enter)="filter()" />
+      </th>
+      <th class="d-none d-sm-table-cell">
+        <input width="100%" type="text" [(ngModel)]="typificationsFilter" (keyup.enter)="filter()" />
+      </th>
+      <th class="">
+        <select [(ngModel)]="activeFilter" (change)="filter()">
+          <option value=""></option>
+          <option value="true">Activo</option>
+          <option value="false">Inactivo</option>
+        </select>
+      </th>
+
+      <th class="d-none d-sm-table-cell">
+
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let prod of products" (click)="clickRow(prod.ProductId)">
+
+      <td class="text-right">
+        {{prod.ProductId}}
+      </td>
+      <td class="">
+        {{prod.ProductName}}
+      </td>
+
+      <td class="d-none d-sm-table-cell">
+        {{prod.NumberOfTypifications}}
+      </td>
+
+      <td class="">
+        {{prod.Active}}
+      </td>
+
+      <td class="d-none d-sm-table-cell">
+        {{prod.ModifiedOn}}
+      </td>
+      <!-- <td>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-secondary" (click)="Edit(prod.ProductId)">
+              <span class="glyphicon glyphicon-refresh">Edit</span>
+            </button>
+          </div>
+        </td> -->
+    </tr>
+  </tbody>
+</table>

@@ -6,12 +6,15 @@ import { environment } from '../../../environments/environment';
 import { Process } from '../../model/process/process.model';
 import { TypificationProcess } from '../../model/typification/typification-process.model';
 import { DocumentalType } from '../../model/process/documental-type.model';
+import { TypificationService } from './typification.service';
 
 @Injectable()
-export class ValidationService {
+export class ValidationService extends TypificationService {
   apiRoot = environment.origin;
 
-  constructor(public http: HttpClient) { }
+  constructor(public http: HttpClient) {
+    super(http);
+  }
 
   getProducts(): Observable<ProductProcess[]> {
     return this.http
@@ -26,10 +29,6 @@ export class ValidationService {
   getTypificationProcess(processId): Observable<TypificationProcess> {
     return this.http
       .get<TypificationProcess>(`${this.apiRoot}/api/TypificationProcess/validation/${processId}`);
-  }
-
-  getDocumentTypes(productId): Observable<DocumentalType[]> {
-    return this.http.get<DocumentalType[]>(`${this.apiRoot}/api/documentTypes?productId=${productId}`);
   }
 
   saveTypification(processId, page, type1, type2, type3): Observable<any> {

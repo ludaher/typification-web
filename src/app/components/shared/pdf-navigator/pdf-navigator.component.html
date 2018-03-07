@@ -1,10 +1,12 @@
 <div class="input-group">
   <span class="input-group-btn">
-    <button class="btn btn-default" title="Primero" (click)="firstPage($event)" >|&lt;
+    <button class="btn btn-default" title="Primero" (click)="firstPage($event)" 
+      [disabled]="pdfPage == 1 || loading">|&lt;
     </button>  
   </span>
   <span class="input-group-btn">
-    <button class="btn btn-default" title="anterior" (click)="previousPage($event)">&lt;</button>
+    <button class="btn btn-default" title="anterior" (click)="previousPage($event)"
+      [disabled]="pdfPage == 1 || loading">&lt;</button>
   </span>
   <span class="input-group-addon">
     pág.
@@ -12,16 +14,19 @@
   <input type="number" form-control class="form-control "
     placeholder="pág" id="page" autocomplete="off" name="page"
     [(ngModel)]="pdfPage"
-    (change)="changePdfPage($event)"  
+    (change)="changePdfPage($event)" 
+    [disabled]="loading"
     required />
 
   <span class="input-group-addon">
     de {{totalPdfPages}}
   </span>
   <span class="input-group-btn">
-    <button href="javascript:void(0)" class="btn btn-default" title="Siguiente" (click)="nextPage($event)">&gt;</button>
+    <button href="javascript:void(0)" class="btn btn-default" title="Siguiente" 
+    (click)="nextPage($event)" [disabled]="pdfPage >= totalPdfPages || loading">&gt;</button>
   </span>
   <span class="input-group-btn">
-    <button href="javascript:void(0)" class="btn btn-default" title="Último" (click)="lastPage($event)">&gt;|</button>
+    <button href="javascript:void(0)" class="btn btn-default" title="Último" (click)="lastPage($event)"
+    [disabled]="pdfPage >= totalPdfPages || loading">&gt;|</button>
   </span>
 </div>

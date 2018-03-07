@@ -35,6 +35,8 @@ export class ValidateComponent implements OnInit, OnDestroy {
   loadAllPdf: boolean;
   pdfRotate: number;
   rotation: string;
+  navigateValid = false;
+  navigateInvalid = true;
 
   @ViewChild('pdfPanel', { read: ElementRef }) private pdfPanel: ElementRef;
   @ViewChild('pdfContent', { read: ElementRef }) private pdfContent: ElementRef;
@@ -59,7 +61,6 @@ export class ValidateComponent implements OnInit, OnDestroy {
       this.querySub = this.activatedRoute
         .queryParams
         .subscribe(queryParams => {
-          if (this.productsSub) { this.querySub.subscribe(); }
           // Defaults to 0 if no query param provided.
           this.processId = queryParams['processId'] || 0;
           this.pdfZoom = 0.5;
@@ -74,17 +75,18 @@ export class ValidateComponent implements OnInit, OnDestroy {
   }
 
   loadProduct() {
+    if (this.productsSub) { this.productsSub.unsubscribe(); }
     this.productsSub = this.typificationService.getTypificationProcess(this.processId)
       .subscribe(
-      typificationProcess => {
-        if (typificationProcess == null) { return; }
-        this.loadProcessPdf();
-        this.loadPdfPage();
-        this.currentProcess = typificationProcess;
-        this.productId = typificationProcess.process.productId;
-        this.totalPdfPages = typificationProcess.process.totalPages;
-      },
-      error => this.error = 'Ha ocurrido un error con la aplicación'
+        typificationProcess => {
+          if (typificationProcess == null) { return; }
+          this.loadProcessPdf();
+          this.loadPdfPage();
+          this.currentProcess = typificationProcess;
+          this.productId = typificationProcess.process.productId;
+          this.totalPdfPages = typificationProcess.process.totalPages;
+        },
+        error => this.error = 'Ha ocurrido un error con la aplicación'
       );
   }
 
@@ -98,6 +100,25 @@ export class ValidateComponent implements OnInit, OnDestroy {
   }
 
   onPageChanged(page) {
+    this.pdfLoaded = false;
+    if (this.navigateValid === false || this.navigateInvalid === false) {
+      const typification = this.getTypificationByPage(page);
+      if (typification) {
+        if (this.navigateValid === true && typification.typificationIsCorrect === false) {
+          if (this.page > page) {
+            page = this.getPreviousTypification(page, true);
+          } else if (this.page < page) {
+            page = this.getNextTypification(page, true);
+          }
+        } else if (this.navigateInvalid === true && typification.typificationIsCorrect === true) {
+          if (this.page > page) {
+            page = this.getPreviousTypification(page, false);
+          } else if (this.page < page) {
+            page = this.getNextTypification(page, false);
+          }
+        }
+      }
+    }
     if (this.loadAllPdf === true) {
       this.pdfPage = this.page = page;
     } else {
@@ -175,5 +196,30 @@ export class ValidateComponent implements OnInit, OnDestroy {
     } else if (e.key.toLowerCase() === 'arrowright') {
       this.pdfPanel.nativeElement.scrollLeft += 100;
     }
+  }
+
+
+  public getTypificationByPage(page): UserTypification {
+    return this.currentProcess.typifications.find(x => x.page === page);
+  }
+
+  public getNextTypification(page, isCorrect): number {
+    const filter = this.currentProcess.typifications
+      .filter(x => x.page > page)
+      .filter(x => x.typificationIsCorrect === isCorrect);
+    if (filter.length <= 0) { return this.currentProcess.process.totalPages; }
+    return filter[0].page;
+  }
+
+  public getPreviousTypification(page, isCorrect): number {
+    const filter = this.currentProcess.typifications
+      .filter(x => x.page < page)
+      .filter(x => x.typificationIsCorrect === isCorrect);
+    if (filter.length <= 0) { return this.currentProcess.process.totalPages; }
+    return filter[filter.length - 1].page;
+  }
+
+  pageRendered(e: CustomEvent) {
+    this.pdfLoaded = true;
   }
 }

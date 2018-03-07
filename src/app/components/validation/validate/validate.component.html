@@ -1,68 +1,138 @@
-<div class="card main-container">
-  <div class="card-block">
-    <div class="container-fluid fill">
-      <div class="row fill">
-        <div class="col-md-5 fill">
-          <div class="card main-container">
-            <div class="card-header">
-              <b>Validación</b>
+<ng-template #popTemplate>
+  <div style="width:280px;">
+    Atajos de tecado
+    <br />
+    <b>Escape</b>: Página anterior
+    <br />
+    <b>alt</b> +
+    <b>shift</b> +
+    <b>r</b>: Rotar
+    <br />
+    <br /> Zoom PDF
+    <br />
+    <b>alt</b> +
+    <b>shift</b> +
+    <b>a</b>: 50%
+    <br />
+    <b>alt</b> +
+    <b>shift</b> +
+    <b>z</b>: 100%
+    <br />
+    <b>alt</b> +
+    <b>shift</b> +
+    <fa name="plus"></fa>: Aumentar
+    <br />
+    <b>alt</b> +
+    <b>shift</b> +
+    <fa name="minus"></fa>: Disminuir
+    <br />
+    <br /> Movimientos PDF
+    <br />
+    <b>alt</b> +
+    <b>shift</b> +
+    <fa name="arrow-up"></fa>: Arriba
+    <br />
+    <b>alt</b> +
+    <b>shift</b> +
+    <fa name="arrow-down"></fa>: Abajo
+    <br />
+    <b>alt</b> +
+    <b>shift</b> +
+    <fa name="arrow-left"></fa>: Izquierda
+    <br />
+    <b>alt</b> +
+    <b>shift</b>+
+    <fa name="arrow-right"></fa>: Derecha
+    <br />
+  </div>
+</ng-template>
+
+<div class="container-fluid fill">
+  <div class="row fill">
+    <div class="col-md-5 fill">
+      <div class="card main-container">
+        <div class="card-header d-flex justify-content-between">
+          <b class="">Vaidación</b>
+          <div class="align-self-center text-right">
+            <button type="button" class="btn btn-info" [popover]="popTemplate" popoverTitle="Ayuda" placement="bottom" triggers="focus">
+              <fa name="info-circle"></fa>
+            </button>
+          </div>
+        </div>
+        <div class="card-block">
+          <br>
+          <div class="content">
+            <div *ngIf="showError()" class="alert alert-danger">
+              <strong>Error!</strong> {{error}}
             </div>
-            <div class="card-block">
-              <br>
-              <div class="content">
-                <div *ngIf="showError()" class="alert alert-danger">
-                  <strong>Error!</strong> {{error}}
-                </div>
-                <div class=" col-md-12">
-                  <app-pdf-navigator (onPageChanged)="onPageChanged($event)" [pdfPage]="page" [totalPdfPages]="totalPdfPages">
-                  </app-pdf-navigator>
-                </div>
-                <div class=" col-md-12">
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" [(ngModel)]="loadAllPdf" (ngModelChange)="loadAllPdfChange($event)"> pdf completo
-                    </label>
-                  </div>
-                </div>
-                <div class=" col-md-12">
-                  <div class="form-group edit-control ng-scope">
-                    <input type="text" disabled="disabled" form-control class="form-control" autocomplete="off" value="" />
-                  </div>
-                </div>
-                <div class=" col-md-12">
-                  <app-validate-form [productId]="productId" [processId]="processId" [page]="page" [pdfLoaded]="pdfLoaded" [process]="currentProcess"
-                    (onTypificationSaved)="onTypificationSaved($event)" (onKeydown)="typeKeydown($event)">
-                  </app-validate-form>
-                </div>
+            <div class=" col-md-12">
+              <app-pdf-navigator (onPageChanged)="onPageChanged($event)" 
+              [pdfPage]="page" [totalPdfPages]="totalPdfPages" [loading]="!pdfLoaded">
+              </app-pdf-navigator>
+            </div>
+            <div class="col-md-12 row">
+              <div class="col-md-6 has-success">
+                <label>
+                  <input type="checkbox" [(ngModel)]="navigateValid" > Consistentes
+                </label>
               </div>
-              <br>
+              <div class="col-md-6 has-danger">
+                <label>
+                  <input type="checkbox" [(ngModel)]="navigateInvalid" > Inconsistentes
+                </label>
+              </div>
+            </div>
+            <div class="col-md-12 row">
+              <div class="col-md-12">
+                <label>
+                  <input type="checkbox" [(ngModel)]="loadAllPdf" (ngModelChange)="loadAllPdfChange($event)"> pdf completo
+                </label>
+              </div>
+            </div>
+            <div class=" col-md-12">
+              <div class="form-group edit-control ng-scope">
+                <input type="text" disabled="disabled" form-control class="form-control" autocomplete="off" value="" />
+              </div>
+            </div>
+            <div class=" col-md-12">
+              <app-validate-form [productId]="productId" [processId]="processId" [page]="page" 
+                [pdfLoaded]="pdfLoaded" [process]="currentProcess"
+                (onTypificationSaved)="onTypificationSaved($event)" 
+                (onKeydown)="typeKeydown($event)">
+              </app-validate-form>
+            </div>
+          </div>
+          <br>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <div class="card main-container text-center">
+        <div class="card-header">
+          <div *ngIf="!pdfLoaded" class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+              style="width:100%">
+              Cargando...
+            </div>
+          </div>
+          <div *ngIf="pdfLoaded" class="progress">
+            <div class="progress-bar  bg-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+              {{page}} / {{totalPdfPages}} {{pdfRotate}}°
             </div>
           </div>
         </div>
-        <div class="col-md-7">
-          <div class="card main-container text-center">
-            <div class="card-block" #pdfPanel>
-              <!-- <progressbar class="progress progress-striped progress-animated" [max]="pdfSize" [value]="pdfSizeLoaded">
+        <div class="card-block" #pdfPanel>
+          <!-- <progressbar class="progress progress-striped progress-animated" [max]="pdfSize" [value]="pdfSizeLoaded">
                 <span style="color:white; white-space:nowrap;">{{pdfSizeLoaded}} / {{pdfSize}}</span>
               </progressbar> -->
-              <div *ngIf="!pdfLoaded" class="progress">
-                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
-                  style="width:100%">
-                  Cargando...
-                </div>
-              </div>
-              <div *ngIf="pdfLoaded" class="progress">
-                <div class="progress-bar  bg-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                  {{page}} / {{totalPdfPages}} {{pdfRotate}}°
-                </div>
-              </div>
-              <div #pdfContent [ngClass]="rotation">
-                <pdf-viewer [src]="pdfSrc" [render-text]="true" style="display: block;" [show-all]="false" [render-text]="false" [stick-to-page]="false"
-                  [(page)]="pdfPage" [original-size]="false" [fit-to-page]="true" [zoom]='pdfZoom' (after-load-complete)="onLoadPdfComplete($event)"
-                  (on-progress)="onProgressPdf($event)" (rotation)="pdfRotate">
-                </pdf-viewer>
-              </div>
-            </div>
+
+          <div #pdfContent [ngClass]="rotation">
+            <pdf-viewer [src]="pdfSrc" [render-text]="true" style="display: block;" [show-all]="false" [render-text]="false" 
+              [stick-to-page]="true" [(page)]="pdfPage" [original-size]="false" [fit-to-page]="true" 
+              [zoom]='pdfZoom' (after-load-complete)="onLoadPdfComplete($event)"
+              (page-rendered)="pageRendered($event)"
+              (on-progress)="onProgressPdf($event)" (rotation)="pdfRotate">
+            </pdf-viewer>
           </div>
         </div>
       </div>

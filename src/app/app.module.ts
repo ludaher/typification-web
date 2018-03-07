@@ -21,6 +21,9 @@ import { JwtInterceptor } from './services/interceptors/jwt.interceptor';
 /// Modules
 import { AppRoutingModule } from './modules/app-routing/app-routing.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CookieService } from 'ngx-cookie-service';
+import { AngularFontAwesomeModule } from 'angular-font-awesome';
+
 // RECOMMENDED (doesn't work with system.js)
 import { ProgressbarModule } from 'ngx-bootstrap/progressbar';
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -35,6 +38,14 @@ import { ValidationSelectorComponent } from './components/validation/validation-
 import { ValidationService } from './services/typification/validation.service';
 import { ValidateComponent } from './components/validation/validate/validate.component';
 import { ValidateFormComponent } from './components/validation/validate/validate-form/validate-form.component';
+import { ProductsComponent } from './components/admin/products/products.component';
+import { PagerComponent } from './components/shared/pager/pager.component';
+import { ProductsService } from './services/admin/products.service';
+import { PagingUtil } from './services/utilities/pagingUtil';
+import { ProductListComponent } from './components/admin/products/product-list/product-list.component';
+import { ProductDetailComponent } from './components/admin/products/product-detail/product-detail.component';
+import { DocumentalTypesService } from './services/admin/documental-types.service';
+import { AuthCallbackComponent } from './components/auth-callback/auth-callback.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +58,12 @@ import { ValidateFormComponent } from './components/validation/validate/validate
     PdfNavigatorComponent,
     ValidationSelectorComponent,
     ValidateComponent,
-    ValidateFormComponent
+    ValidateFormComponent,
+    ProductsComponent,
+    ProductListComponent,
+    ProductDetailComponent,
+    PagerComponent,
+    AuthCallbackComponent
   ],
   imports: [
     BrowserModule,
@@ -59,14 +75,19 @@ import { ValidateFormComponent } from './components/validation/validate/validate
     FormsModule,
     PopoverModule.forRoot(),
     ProgressbarModule.forRoot(),
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    AngularFontAwesomeModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     AuthService,
+    DocumentalTypesService,
     TypificationService,
-    ValidationService
+    ValidationService,
+    CookieService,
+    ProductsService,
+    PagingUtil
   ],
   bootstrap: [AppComponent]
 })

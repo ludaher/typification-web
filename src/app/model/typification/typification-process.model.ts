@@ -6,8 +6,9 @@ export class TypificationProcess {
         public _id: string,
         public process: Process,
         public typifications: UserTypification[],
-        public typificationsCount: string
+        public typificationsCount: number
     ) {
 
     }
+
 }

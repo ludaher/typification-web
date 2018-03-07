@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../services/authentication/auth.service';
 // RECOMMENDED (doesn't work with system.js)
 // import { CollapseModule } from 'ngx-bootstrap/collapse';
 
@@ -10,12 +11,18 @@ import { Component, OnInit } from '@angular/core';
 export class MenuComponent implements OnInit {
 
   username: string;
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
+    const user = this.authService.currentUser();
+    this.loadCurrentUser(user);
   }
 
   logout() {
-
+    this.authService.logout();
+  }
+  loadCurrentUser(user: any): void {
+    if (!user || user == null) { return; }
+    this.username = user.username;
   }
 }

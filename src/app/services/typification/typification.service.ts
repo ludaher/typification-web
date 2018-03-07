@@ -37,8 +37,8 @@ export class TypificationService {
           .get<TypificationProcess>(`${this.apiRoot}/api/TypificationProcess/typification/${processId}`);
   }
 
-  getDocumentTypes(productId): Observable<DocumentalType[]> {
-    return this.http.get<DocumentalType[]>(`${this.apiRoot}/api/documentTypes?productId=${productId}` );
+  getDocumentTypes(productId): Observable<any> {
+    return this.http.get<any>(`${this.apiRoot}/api/DocumentalTypes?filter=ProductId,13,${productId}` );
   }
 
   saveTypification(processId, page, type1, type2, type3): Observable<any> {

@@ -10,10 +10,13 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/do';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../authentication/auth.service';
+import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(public auth: AuthService) { }
+  constructor(public auth: AuthService,
+    private router: Router) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).do((event: HttpEvent<any>) => {
@@ -26,6 +29,7 @@ export class JwtInterceptor implements HttpInterceptor {
         if (err.status === 401) {
           // redirect to the login route
           // or show a modal
+          this.auth.gotoLogin();
         } if (err.status !== 409) {
           return { error: err.error };
         }

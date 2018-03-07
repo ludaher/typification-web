@@ -1,0 +1,30 @@
+<div class="card main-container">
+  <div class="card-header">
+    <div class="d-flex justify-content-between ">
+      <div class="">
+        <h4 *ngIf="viewList">Productos</h4>
+        <a *ngIf="!viewList" (click)="showList()">
+          <h4 style="display: inline;" title="Ver la lista">
+            <fa name="arrow-circle-left"></fa>
+            Productos</h4>
+        </a>
+      </div>
+      <div *ngIf="warning" class="alert alert-warning">
+        <strong>Alerta!</strong> {{warning}}
+      </div>
+
+      <div *ngIf="error" class="alert alert-error">
+        <strong>Error!</strong> {{error}}
+      </div>
+    </div>
+  </div>
+  <div class="card-block" *ngIf="viewList">
+    <app-product-list [products]="products" (clickProduct)="showProduct($event)" (changeFilter)="changeFilter($event)" (changeOrder)="changeOrder($event)"></app-product-list>
+  </div>
+  <div class="card-footer text-muted" *ngIf="viewList">
+    <app-pager (goToPage)="goToPage($event)" [pagesToShow]="pagesToShow" [page]="page" [perPage]="perPage" [count]="total" [loading]="loading"></app-pager>
+  </div>
+  <div class="card-block" *ngIf="!viewList">
+    <app-product-detail [product]="product" (cancel)="showList()" (error)="showError($event)" (saveComplete)="updateData()"></app-product-detail>
+  </div>
+</div>

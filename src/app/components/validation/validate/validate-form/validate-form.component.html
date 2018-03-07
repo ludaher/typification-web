@@ -8,27 +8,29 @@
       <div class="input-group">
         <input type="text" form-control class="form-control form-control-warning" (keyup)="onKeydownHandler($event)" (ngModelChange)="ChangeType1($event)"
           [(ngModel)]="type1" maxlength="2" autocomplete="off" name="selectedTypeId1" autofocus="autofocus" [disabled]="processing"
-          #type1Text id="typePage1"/>
+          #type1Text id="typePage1"  style="min-width: 50px;"/>
         <span class="input-group-addon" style="width:80%;">
           {{type1}} - {{typeLabel1}}
         </span>
-        <span class="input-group-addon" >
-            <span class="fa " [ngClass]="statusType1"    popover="{{ type1Typification1 + ' - ' + type1Typification2 }}" [outsideClick]="true" container="body"></span>
+        <span class="input-group-addon">
+          <span class="fa " [ngClass]="statusType1" popover="{{ type1Typification1 + ' - ' + type1Typification2 }}" [outsideClick]="true"
+            container="body"></span>
         </span>
       </div>
     </div>
-    
+
     <div class="form-group" [ngClass]="type2Class()">
       <label class="form-control-label " for="typePage2"> Tipo documental 1</label>
       <div class="input-group">
         <input type="text" form-control class="form-control form-control-warning" (keyup)="onKeydownHandler($event)" (ngModelChange)="ChangeType2($event)"
           [(ngModel)]="type2" maxlength="2" autocomplete="off" name="selectedTypeId2" autofocus="autofocus" [disabled]="processing"
-          #type1Text id="typePage2" container="body" />
+          #type1Text id="typePage2" container="body" style="min-width: 50px;" />
         <span class="input-group-addon" style="width:80%;">
           {{type2}} - {{typeLabel2}}
         </span>
         <span class="input-group-addon">
-          <span class="fa " [ngClass]="statusType2"  popover="{{ type2Typification1 + ' - ' + type2Typification2 }}" [outsideClick]="true" container="body" ></span>
+          <span class="fa " [ngClass]="statusType2" popover="{{ type2Typification1 + ' - ' + type2Typification2 }}" [outsideClick]="true"
+            container="body"></span>
         </span>
       </div>
     </div>
@@ -38,14 +40,14 @@
       <div class="input-group">
         <input type="text" form-control class="form-control form-control-warning" (keyup)="onKeydownHandler($event)" (ngModelChange)="ChangeType3($event)"
           [(ngModel)]="type3" maxlength="2" autocomplete="off" name="selectedTypeId3" autofocus="autofocus" [disabled]="processing"
-          #type1Text id="typePage3" container="body"   />
+          #type1Text id="typePage3" container="body"  style="min-width: 50px;"/>
         <span class="input-group-addon" style="width:80%;">
           {{type3}} - {{typeLabel3}}
         </span>
         <span class="input-group-addon">
-          <button type="button" class="btn btn-secondary"
-            data-trigger="hover">
-            <span class="fa " [ngClass]="statusType3" popover="{{ type3Typification1 + ' - ' + type3Typification2 }}" [outsideClick]="true" container="body"></span>
+          <button type="button" class="btn btn-secondary" data-trigger="hover">
+            <span class="fa " [ngClass]="statusType3" popover="{{ type3Typification1 + ' - ' + type3Typification2 }}" [outsideClick]="true"
+              container="body"></span>
           </button>
         </span>
       </div>
@@ -57,7 +59,7 @@
     </div>
     <div class="btn-group">
       <button type="submit" class="btn btn-success" [disabled]="processing">
-        <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">.</span>
+        <fa *ngIf="processing" name="refresh" animation="spin"></fa>
         Guardar
       </button>
     </div>
@@ -78,7 +80,7 @@
       <div class="modal-body">
         <p>Desea validar el siguiente proceso del producto {{productId}}?</p>
         <button type="button" class="btn btn-default" (click)="goToList()">Ir a validación</button>
-        <button type="button" class="btn btn-primary" (click)="continue()" #continueButton >Continuar</button>
+        <button type="button" class="btn btn-primary" (click)="continue()" #continueButton>Continuar</button>
       </div>
     </div>
   </div>

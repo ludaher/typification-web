@@ -5,5 +5,8 @@
 
 export const environment = {
   production: true,
-  origin: 'http://localhost:61259'
+  origin: 'http://localhost:61259',
+  loginUrl: 'http://localhost/WelcomeSite',
+  cookie: 'test_cookie'
+
 };

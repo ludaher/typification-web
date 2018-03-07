@@ -8,6 +8,7 @@ import { Injectable, Component, Input, Output, EventEmitter, OnInit  } from '@an
 export class PdfNavigatorComponent implements OnInit {
 
   @Input() pdfPage: number;
+  @Input() loading: number;
   @Input() totalPdfPages: number;
   @Output() onPageChanged: EventEmitter<number> = new EventEmitter<number>();
 

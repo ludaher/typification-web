@@ -21,6 +21,7 @@ export class TypifyComponent implements OnInit, OnDestroy {
   productsSub: any;
   paramsSub: any;
   querySub: any;
+
   page: number;
   pdfPage: number;
   totalPdfPages: number;

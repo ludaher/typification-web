@@ -1,8 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 body
 {
-    background-color: rgba(246, 164, 25,1) ;    
-    background-image: linear-gradient(#F8BF5D, #ee7501, #F6A419, #ee7501,#F6A419, #F8BF5D);
+    background-color: #e6e6ff;    
+    /* background-image: linear-gradient(#F8BF5D, #ee7501, #F6A419, #ee7501,#F6A419, #F8BF5D); */
+    /* font-size: 0.9em; */
+}
+.navbar{
+    padding: 0rem 1rem;
 }
 
 .fill { 
@@ -26,11 +30,17 @@ body
     -moz-box-shadow: 5px 5px 0 #534f57;
 }
 
-.card.main-container>.card-block{
+.card.main-container>.card-block, .full-height{
     overflow: auto;
     height: 100%;
+    background: #fff;
 }
-
+.card.main-container>.card-header{
+    
+}
+.transparent{
+    background: transparent;
+}
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;
     -webkit-animation: spin2 .7s infinite linear;
@@ -58,7 +68,7 @@ body
 .has-warning .form-control, .has-warning .col-form-label, .has-warning .custom-control, .has-warning .form-check-label, .has-warning .form-control-feedback, .has-warning .form-control-label, .has-warning .input-group-addon  {
     color: #f0ad4e;
 }
-.has-danger .form-control, .has-danger .col-form-label, .has-danger .custom-control, .has-danger .form-check-label, .has-danger .form-control-feedback, .has-danger .form-control-label, .has-danger .input-group-addon {
+.has-danger label, .has-danger .form-control, .has-danger .col-form-label, .has-danger .custom-control, .has-danger .form-check-label, .has-danger .form-control-feedback, .has-danger .form-control-label, .has-danger .input-group-addon {
     color: #d9534f;
 }
 
@@ -77,4 +87,49 @@ body
 
 .ng2-pdf-viewer-container{
     overflow-x: initial !important;
+}
+
+.form-group label{
+    margin: 0;
+}
+
+.form-control{
+    padding: 0.1rem 0.75rem
+}
+select.form-control:not([size]):not([multiple]){
+    height: calc(1.7rem + 2px);
+}
+
+a{
+    cursor: pointer;    
+}
+
+.table th, .table td{
+    padding: 0.5rem;
+}
+.table th a{
+    text-decoration: underline !important;
+}
+
+
+.filter th{
+    padding:0;
+}
+.filter th input, .filter th select{
+    width: 95%;
+    height: 25px;
+}
+
+.bg-default
+{
+    background-color: #e6e6ff;
+}
+
+input[type="file"]{
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
 }

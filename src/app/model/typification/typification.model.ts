@@ -7,7 +7,8 @@ export class UserTypification {
         public documentTypeId2: string,
         public documentTypeId3: string,
         public typification1: UserTypification,
-        public typification2: UserTypification
+        public typification2: UserTypification,
+        public typificationIsCorrect: boolean
     ) {
 
     }
