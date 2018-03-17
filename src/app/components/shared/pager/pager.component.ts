@@ -21,10 +21,14 @@ export class PagerComponent implements OnInit {
   }
 
   changePage() {
+    if (this.page > this.pagesToShow) { this.page = this.pagesToShow; }
+    if (this.page < 1) { this.page = 1; }
     this.goToPage.emit(this.page);
   }
 
   goTo(page) {
+    if (this.page > this.pagesToShow) { this.page = this.pagesToShow; }
+    if (this.page < 1) { this.page = 1; }
     this.goToPage.emit(page);
   }
 
@@ -32,7 +36,7 @@ export class PagerComponent implements OnInit {
     this.goToPage.emit(this.page - 1);
   }
 
-  onNext(next: boolean): void {
+  onNext(): void {
     this.goToPage.emit(this.page + 1);
   }
 }

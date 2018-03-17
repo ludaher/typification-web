@@ -11,15 +11,12 @@ export class AppComponent implements OnInit {
   title = 'app';
   logged = false;
   constructor(private authService: AuthService) {
-    // const user = this.authService.currentUser();
-    // if (!user || !user.token) {
-    //   this.authService.gotoLogin();
-    //   return;
-    // }
-    // this.logged = true;
+    authService.userLoggedin.subscribe(item => {
+      this.logged = this.authService.isLoggedIn();
+    });
   }
 
   ngOnInit() {
-    this.logged = this.authService.isAuthenticated();
+    this.logged = this.authService.isLoggedIn();
   }
 }

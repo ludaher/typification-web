@@ -8,7 +8,7 @@
       <div class="input-group">
         <input type="text" form-control class="form-control form-control-warning" (keyup)="onKeydownHandler($event)" (ngModelChange)="ChangeType1($event)"
           [(ngModel)]="type1" maxlength="2" autocomplete="off" name="selectedTypeId1" autofocus="autofocus" [disabled]="processing"
-          #type1Text id="typePage1"  style="min-width: 50px;"/>
+          #type1Text id="typePage1" style="min-width: 50px;" />
         <span class="input-group-addon" style="width:80%;">
           {{type1}} - {{typeLabel1}}
         </span>
@@ -40,7 +40,7 @@
       <div class="input-group">
         <input type="text" form-control class="form-control form-control-warning" (keyup)="onKeydownHandler($event)" (ngModelChange)="ChangeType3($event)"
           [(ngModel)]="type3" maxlength="2" autocomplete="off" name="selectedTypeId3" autofocus="autofocus" [disabled]="processing"
-          #type1Text id="typePage3" container="body"  style="min-width: 50px;"/>
+          #type1Text id="typePage3" container="body" style="min-width: 50px;" />
         <span class="input-group-addon" style="width:80%;">
           {{type3}} - {{typeLabel3}}
         </span>
@@ -67,25 +67,20 @@
 
 </form>
 
-<div *ngIf="showContinueModal" [config]="{ backdrop: 'static', show: true }" (onHidden)="onHidden()" bsModal #continueModal="bs-modal"
-  class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">.: Confirmación</h5>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="hideModal()">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Desea validar el siguiente proceso del producto {{productId}}?</p>
-        <button type="button" class="btn btn-default" (click)="goToList()">Ir a validación</button>
-        <button type="button" class="btn btn-primary" (click)="continue()" #continueButton>Continuar</button>
-      </div>
-    </div>
-  </div>
-</div>
 
+
+<ng-template #contentContinue let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h5 class="modal-title">.: Confirmación</h5>
+  </div>
+  <div class="modal-body">
+    <p>Desea validar el siguiente proceso del producto {{productId}}?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" (click)="goToList()">Ir a tipificación</button>
+    <button type="button" class="btn btn-primary" (click)="continue()" autofocus>Continuar</button>
+  </div>
+</ng-template>
 
 <div *ngIf="showErrorModal" class="modal fade" bsModal #staticModal="bs-modal" #errorModal="bs-modal" [config]="{backdrop: 'static', show: true}"
   tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">

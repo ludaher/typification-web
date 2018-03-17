@@ -1,7 +1,7 @@
 import {
   Injectable, Component, Input, Output,
   EventEmitter, OnInit, ViewChild, ElementRef,
-  TemplateRef, OnDestroy
+  TemplateRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { TypificationService } from '../../../../services/typification/typification.service';
@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ModalDirective } from 'ngx-bootstrap/modal';
+import { NgbModal, NgbModalRef, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-typify-form',
@@ -19,10 +20,11 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
   styleUrls: ['./typify-form.component.css']
 })
 
-export class TypifyFormComponent implements OnInit, OnDestroy {
+export class TypifyFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(protected typificationService: TypificationService,
-    protected router: Router) {
+    protected router: Router,
+    protected modalService: NgbModal) {
     this.documentalTypes1 = new Array();
     this.documentalTypes2 = new Array();
     this.documentalTypes3 = new Array();
@@ -69,11 +71,11 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
   @Output() onKeydown = new EventEmitter<any>();
 
   @ViewChild('type1Text') type1Text: ElementRef;
-  @ViewChild('continueButton') continueButton: ElementRef;
-  @ViewChild('continueModal') continueModal: ModalDirective;
+
+  @ViewChild('contentContinue') contentContinue: TemplateRef<any>;
   @ViewChild('errorModal') errorModal: ModalDirective;
 
-  modalRef: BsModalRef;
+  modalRef: NgbModalRef;
   documentalTypes1: any[];
   documentalTypes2: any[];
   documentalTypes3: any[];
@@ -87,7 +89,10 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
   processing: boolean;
   validForm: boolean;
   showErrorModal: boolean;
-  showContinueModal: boolean;
+
+  ngAfterViewInit() {
+    console.log('init');
+  }
 
   ngOnInit() {
     this.documentsSub = (this.typificationService
@@ -142,17 +147,13 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
       .saveTypification(this.processId, this.pdfPage, this.type1, this.type2, this.type3)
       .subscribe(
         (data) => {
-          this.processing = false;
           if (data.completed === true) {
-            this.showContinueModal = true;
-            setTimeout(() => {
-              this.continueButton.nativeElement.focus();
-            }, 500);
+            this.modalRef = this.modalService.open(this.contentContinue, { keyboard: false });
             return;
           }
+          this.processing = false;
           if (data.pendingPage > 0) {
-            this.pdfPage = data.pendingPage;
-            this.onTypificationSaved.emit({ success: true, page: this.pdfPage });
+            this.onTypificationSaved.emit({ success: true, page: data.pendingPage });
             return;
           }
           this.updateTypifications();
@@ -172,10 +173,10 @@ export class TypifyFormComponent implements OnInit, OnDestroy {
       .subscribe(
         data => {
           this.router.navigate([this.navigateAfterAssign, productId], { queryParams: { processId: data } });
-          this.showContinueModal = false;
+          this.modalRef.close();
         },
         err => {
-          this.showContinueModal = false;
+          this.modalRef.close();
           this.processing = false;
           this.showError(err.error.error);
         }

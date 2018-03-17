@@ -1,12 +1,12 @@
 <div class="input-group">
   <span class="input-group-btn">
     <button class="btn btn-default" title="Primero" (click)="firstPage($event)" 
-      [disabled]="pdfPage == 1 || loading">|&lt;
+      [disabled]="pdfPage == 1 || loading"><fa name="angle-left"></fa>
     </button>  
   </span>
   <span class="input-group-btn">
     <button class="btn btn-default" title="anterior" (click)="previousPage($event)"
-      [disabled]="pdfPage == 1 || loading">&lt;</button>
+      [disabled]="pdfPage == 1 || loading"><fa name="angle-double-left"></fa></button>
   </span>
   <span class="input-group-addon">
     pág.
@@ -23,10 +23,10 @@
   </span>
   <span class="input-group-btn">
     <button href="javascript:void(0)" class="btn btn-default" title="Siguiente" 
-    (click)="nextPage($event)" [disabled]="pdfPage >= totalPdfPages || loading">&gt;</button>
+    (click)="nextPage($event)" [disabled]="pdfPage >= totalPdfPages || loading"><fa name="angle-double-right"></fa></button>
   </span>
   <span class="input-group-btn">
     <button href="javascript:void(0)" class="btn btn-default" title="Último" (click)="lastPage($event)"
-    [disabled]="pdfPage >= totalPdfPages || loading">&gt;|</button>
+    [disabled]="pdfPage >= totalPdfPages || loading"><fa name="angle-right"></fa></button>
   </span>
 </div>

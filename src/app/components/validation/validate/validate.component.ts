@@ -7,6 +7,7 @@ import { environment } from '../../../../environments/environment';
 import { EventEmitter } from 'selenium-webdriver';
 import { TypificationProcess } from '../../../model/typification/typification-process.model';
 import { UserTypification } from '../../../model/typification/typification.model';
+import { AuthService } from '../../../services/authentication/auth.service';
 
 @Component({
   selector: 'app-validate',
@@ -26,7 +27,8 @@ export class ValidateComponent implements OnInit, OnDestroy {
   processId;
   productId;
   currentProcess: TypificationProcess;
-  pdfSrc = '';
+  pdfSrc: any;
+  source: any;
   error: string;
   pdfZoom: number;
   pdfLoaded: boolean;
@@ -41,10 +43,10 @@ export class ValidateComponent implements OnInit, OnDestroy {
   @ViewChild('pdfPanel', { read: ElementRef }) private pdfPanel: ElementRef;
   @ViewChild('pdfContent', { read: ElementRef }) private pdfContent: ElementRef;
   constructor(private activatedRoute: ActivatedRoute,
-    private typificationService: ValidationService) { }
+    private typificationService: ValidationService,
+    private authService: AuthService) { }
 
   ngOnInit() {
-    // this.loadHotkeys();
     this.loadParameters();
   }
 
@@ -70,7 +72,6 @@ export class ValidateComponent implements OnInit, OnDestroy {
           this.pdfPage = this.page = 1;
           this.loadProduct();
         });
-      // In a real app: dispatch action to load the details here.
     });
   }
 
@@ -95,9 +96,6 @@ export class ValidateComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  onTypificationSaved(value) {
-    this.onPageChanged(value.page);
-  }
 
   onPageChanged(page) {
     this.pdfLoaded = false;
@@ -127,9 +125,19 @@ export class ValidateComponent implements OnInit, OnDestroy {
     this.loadPdfPage();
   }
 
+
+  changePdfSource(url) {
+    this.pdfSrc = {
+      httpHeaders: {
+        'Authorization': this.authService.getAuthorizationHeaderValue()
+      },
+      url: url
+    };
+  }
+
   loadProcessPdf() {
     if (this.loadAllPdf === true) {
-      this.pdfSrc = `${environment.origin}/api/repository/${this.processId}`;
+      this.changePdfSource(`${environment.origin}/api/repository/${this.processId}`);
     }
   }
 
@@ -137,9 +145,9 @@ export class ValidateComponent implements OnInit, OnDestroy {
     if (this.loadAllPdf === false) {
       this.pdfLoaded = false;
       if (this.page) {
-        this.pdfSrc = `${environment.origin}/api/repository/${this.processId}/${this.page}`;
+        this.changePdfSource(`${environment.origin}/api/repository/${this.processId}/${this.page}`);
       } else {
-        this.pdfSrc = `${environment.origin}/api/repository/${this.processId}/1`;
+        this.changePdfSource(`${environment.origin}/api/repository/${this.processId}/1`);
       }
     }
   }
@@ -215,11 +223,16 @@ export class ValidateComponent implements OnInit, OnDestroy {
     const filter = this.currentProcess.typifications
       .filter(x => x.page < page)
       .filter(x => x.typificationIsCorrect === isCorrect);
-    if (filter.length <= 0) { return this.currentProcess.process.totalPages; }
+    if (filter.length <= 0) { return 1; }
     return filter[filter.length - 1].page;
   }
 
   pageRendered(e: CustomEvent) {
     this.pdfLoaded = true;
   }
+
+  onTypificationSaved(value) {
+    this.onPageChanged(value.page);
+  }
+
 }

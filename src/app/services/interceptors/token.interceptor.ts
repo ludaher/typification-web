@@ -16,11 +16,10 @@ export class TokenInterceptor implements HttpInterceptor {
   constructor(public auth: AuthService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    console.log('Agregando el token al header');
     if (this.auth.isLoggedIn()) {
       request = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${this.auth.getAuthorizationHeaderValue()}`
+          Authorization: this.auth.getAuthorizationHeaderValue()
         }
       });
     }

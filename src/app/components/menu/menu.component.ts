@@ -11,7 +11,11 @@ import { AuthService } from '../../services/authentication/auth.service';
 export class MenuComponent implements OnInit {
 
   username: string;
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {
+    authService.userLoggedin.subscribe(obj => {
+      this.ngOnInit();
+    });
+  }
 
   ngOnInit() {
     const user = this.authService.currentUser();
@@ -23,6 +27,6 @@ export class MenuComponent implements OnInit {
   }
   loadCurrentUser(user: any): void {
     if (!user || user == null) { return; }
-    this.username = user.username;
+    this.username = user.profile.user_name;
   }
 }

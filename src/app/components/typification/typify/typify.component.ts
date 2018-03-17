@@ -10,6 +10,7 @@ import { EventEmitter } from 'selenium-webdriver';
 import { TypificationProcess } from '../../../model/typification/typification-process.model';
 import { UserTypification } from '../../../model/typification/typification.model';
 import { trigger } from '@angular/core';
+import { AuthService } from '../../../services/authentication/auth.service';
 
 @Component({
   selector: 'app-typify',
@@ -28,7 +29,7 @@ export class TypifyComponent implements OnInit, OnDestroy {
   processId;
   productId;
   currentProcess: TypificationProcess;
-  pdfSrc = '';
+  // pdfSrc = '';
   error: string;
   pdfZoom: number;
   pdfLoaded: boolean;
@@ -38,10 +39,19 @@ export class TypifyComponent implements OnInit, OnDestroy {
   pdfRotate: number;
   rotation: string;
 
+  pdfSrc: any;
+  source  = {
+    httpHeaders: {
+      'Authorization': this.authService.getAuthorizationHeaderValue()
+    },
+    url: ''
+  };
+
   @ViewChild('pdfPanel', { read: ElementRef }) private pdfPanel: ElementRef;
   @ViewChild('pdfContent', { read: ElementRef }) private pdfContent: ElementRef;
   constructor(private activatedRoute: ActivatedRoute,
-    private typificationService: TypificationService) { }
+    private typificationService: TypificationService,
+    private authService: AuthService) { }
 
   ngOnInit() {
     this.loadParameters();
@@ -79,15 +89,15 @@ export class TypifyComponent implements OnInit, OnDestroy {
   loadProduct() {
     this.productsSub = this.typificationService.getTypificationProcess(this.processId)
       .subscribe(
-      typificationProcess => {
-        if (typificationProcess == null) { return; }
-        this.loadProcessPdf();
-        this.loadPdfPage();
-        this.currentProcess = typificationProcess;
-        this.productId = typificationProcess.process.productId;
-        this.totalPdfPages = typificationProcess.process.totalPages;
-      },
-      error => this.error = 'Ha ocurrido un error con la aplicación'
+        typificationProcess => {
+          if (typificationProcess == null) { return; }
+          this.loadProcessPdf();
+          this.loadPdfPage();
+          this.currentProcess = typificationProcess;
+          this.productId = typificationProcess.process.productId;
+          this.totalPdfPages = typificationProcess.process.totalPages;
+        },
+        error => this.error = 'Ha ocurrido un error con la aplicación'
       );
   }
 
@@ -101,6 +111,7 @@ export class TypifyComponent implements OnInit, OnDestroy {
   }
 
   onPageChanged(page) {
+    this.pdfLoaded = false;
     if (this.loadAllPdf === true) {
       this.pdfPage = this.page = page;
     } else {
@@ -109,9 +120,18 @@ export class TypifyComponent implements OnInit, OnDestroy {
     this.loadPdfPage();
   }
 
+  changePdfSource(url) {
+    this.pdfSrc = {
+      httpHeaders: {
+        'Authorization': this.authService.getAuthorizationHeaderValue()
+      },
+      url: url
+    };
+  }
+
   loadProcessPdf() {
     if (this.loadAllPdf === true) {
-      this.pdfSrc = `${environment.origin}/api/repository/${this.processId}`;
+      this.changePdfSource(`${environment.origin}/api/repository/${this.processId}`);
     }
   }
 
@@ -119,9 +139,9 @@ export class TypifyComponent implements OnInit, OnDestroy {
     if (this.loadAllPdf === false) {
       this.pdfLoaded = false;
       if (this.page) {
-        this.pdfSrc = `${environment.origin}/api/repository/${this.processId}/${this.page}`;
+        this.changePdfSource(`${environment.origin}/api/repository/${this.processId}/${this.page}`);
       } else {
-        this.pdfSrc = `${environment.origin}/api/repository/${this.processId}/1`;
+        this.changePdfSource(`${environment.origin}/api/repository/${this.processId}/1`);
       }
     }
   }
@@ -178,5 +198,9 @@ export class TypifyComponent implements OnInit, OnDestroy {
     } else if (e.key.toLowerCase() === 'arrowright') {
       this.pdfPanel.nativeElement.scrollLeft += 100;
     }
+  }
+
+  pageRendered(e: CustomEvent) {
+    this.pdfLoaded = true;
   }
 }

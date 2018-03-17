@@ -47,6 +47,7 @@ export class ProductsComponent extends BaseComponent implements OnInit {
 
   updateData(): void {
     this.loading = true;
+    this.error = '';
     this.service
       .getSelect(
         'ProductId,ProductName,NumberOfTypifications,Active,ModifiedOn',
@@ -64,7 +65,7 @@ export class ProductsComponent extends BaseComponent implements OnInit {
           this.products = result.resultList;
           this.loading = false;
         },
-        error => this.error = 'Ha ocurrido un error con la aplicación'
+        error => this.showError(error.error)
       );
     this.viewList = true;
   }
@@ -76,11 +77,20 @@ export class ProductsComponent extends BaseComponent implements OnInit {
       .safeSubscribe(
         this,
         product => {
+          this.loading = false;
           this.product = product;
-          console.log(this.product);
+          this.viewList = false;
+          // console.log(this.product);
         },
-        error => this.error = 'Ha ocurrido un error con la aplicación'
+        error => {
+          this.showError(error.error);
+          this.loading = false;
+        }
       );
+  }
+
+  addProduct() {
+    this.product = new Product('0');
     this.viewList = false;
   }
 

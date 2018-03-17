@@ -25,7 +25,11 @@
       </th>
 
       <th class="">
-        Activo
+          <a (click)="order('Active')" title="Ordenar">
+              Activo
+              <fa name="angle-down" *ngIf="orderColumn == 'Active' && descendingOrder == true"></fa>
+              <fa name="angle-up" *ngIf="orderColumn == 'Active' && descendingOrder == false"></fa>
+            </a>
       </th>
 
       <th class="d-none d-sm-table-cell">
@@ -75,7 +79,7 @@
       </td>
 
       <td class="">
-        {{prod.Active}}
+        <input type="checkbox" [(ngModel)]="prod.Active" disabled="disabled" /> 
       </td>
 
       <td class="d-none d-sm-table-cell">

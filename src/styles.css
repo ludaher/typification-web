@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 body
 {
-    background-color: #e6e6ff;    
+    background-color: #7F14B0!important;    
     /* background-image: linear-gradient(#F8BF5D, #ee7501, #F6A419, #ee7501,#F6A419, #F8BF5D); */
     /* font-size: 0.9em; */
 }
@@ -36,7 +36,16 @@ body
     background: #fff;
 }
 .card.main-container>.card-header{
-    
+    padding: 0;
+}
+
+.card.main-container>.card-header .title{
+    padding: 0.75rem 1.25rem;
+}
+
+.card.main-container>.card-header .alert{
+    margin-bottom:0;
+    margin: 5px;
 }
 .transparent{
     background: transparent;
@@ -132,4 +141,8 @@ input[type="file"]{
 	overflow: hidden;
 	position: absolute;
 	z-index: -1;
+}
+
+.card-header .btn{
+    padding: 0.2rem 1rem;
 }

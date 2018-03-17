@@ -13,12 +13,12 @@ export class GenericService {
 
     }
 
-    add<T>(entity): Observable<T> {
+    add<T>(entity: T): Observable<T> {
         const url = `${this.apiRoot}/${this.relativeRoute}`;
-        return this.http.put<T>(url, { value: entity });
+        return this.http.put<T>(url, entity);
     }
 
-    update<T>(entity): Observable<T> {
+    update<T>(entity: T): Observable<T> {
         const url = `${this.apiRoot}/${this.relativeRoute}`;
         return this.http.post<T>(url, entity);
     }

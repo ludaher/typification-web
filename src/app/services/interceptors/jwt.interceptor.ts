@@ -28,12 +28,13 @@ export class JwtInterceptor implements HttpInterceptor {
       if (err instanceof HttpErrorResponse) {
         if (err.status === 401) {
           // redirect to the login route
-          // or show a modal
-          this.auth.gotoLogin();
-        } if (err.status !== 409) {
-          return { error: err.error };
+          this.auth.startAuthentication();
+          return;
+        } if (err.status === 409) {
+          return;
         }
-        return { error: 'Ha ocurrido un error con el request.' };
+        err.error.message = 'Ha ocurrido un error de en el servidor.';
+        return;
       }
     });
   }

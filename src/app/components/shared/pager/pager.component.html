@@ -1,15 +1,8 @@
-<div class="container">
-  <div class="row justify-content-md-center">
-    <div class="col-md-auto">
-      <div class="input-group">
-        <button class="btn btn-default" (click)="goTo(1)" [disabled]="page == 1 || loading">1</button>
-        <button class="btn btn-default" (click)="onPrev()" [disabled]="page == 1 || loading">&lt;&lt;</button>
-        <input type="number" class="form-control" placeholder="página" id="page" autocomplete="off" name="page" [(ngModel)]="page" (keyup.enter)="changePage($event)"
-          required style="width: 50px;"/>
-        <button class="btn btn-primary" type="button" (click)="changePage(page)">Ir!</button>
-        <button class="btn btn-default" (click)="onNext()" [disabled]="page === pagesToShow || loading">&gt;&gt;</button>
-        <button class="btn btn-default" (click)="goTo(pagesToShow)" [disabled]="page === pagesToShow || loading">{{pagesToShow}}</button>
-      </div>
-    </div>
-  </div>
+<div class="input-group">
+  <button class="btn btn-default" (click)="goTo(1)" [disabled]="page == 1 || loading">1</button>
+  <button class="btn btn-default" (click)="onPrev()" [disabled]="page == 1 || loading"><fa name="angle-double-left"></fa></button>
+  <input type="number" class="form-control" placeholder="página" id="page" autocomplete="off" name="page" [(ngModel)]="page" (keyup.enter)="changePage()" required style="width: 120px;" />
+  <button class="btn btn-primary" type="button" (click)="changePage()">Ir!</button>
+  <button class="btn btn-default" (click)="onNext()" [disabled]="page === pagesToShow || loading"><fa name="angle-double-right"></fa></button>
+  <button class="btn btn-default" (click)="goTo(pagesToShow)" [disabled]="page === pagesToShow || loading">{{pagesToShow}}</button>
 </div>

@@ -45,18 +45,36 @@ export class ProductDetailComponent extends BaseComponent implements OnInit {
   }
 
   onSubmit() {
-    this.productService
-      .update<Product>(this.product)
-      .safeSubscribe(
-        this,
-        result => {
-          this.loading = false;
-          this.saveComplete.emit();
-        },
-        error => {
-          this.error.emit('Ha ocurrido un error con la aplicación');
-        }
-      );
+    this.loading = true;
+    if (this.product.ProductId === 0) {
+      this.productService
+        .add<Product>(this.product)
+        .safeSubscribe(
+          this,
+          product => {
+            this.loading = false;
+            this.product = product;
+          },
+          err => {
+            this.loading = false;
+            this.error.emit(err.error.message);
+          }
+        );
+    } else {
+      this.productService
+        .update<Product>(this.product)
+        .safeSubscribe(
+          this,
+          result => {
+            this.loading = false;
+            this.saveComplete.emit();
+          },
+          err => {
+            this.loading = false;
+            this.error.emit(err.error.message);
+          }
+        );
+    }
   }
 
   cancelClick(): void {
@@ -68,14 +86,18 @@ export class ProductDetailComponent extends BaseComponent implements OnInit {
     if (!productId) {
       return;
     }
+    this.loading = true;
+    this.documentalTypes = undefined;
     this.documentalTypesService
       .getList<any>(`ProductId,13,${productId}`, null, null, 'Value', true)
       .safeSubscribe(
         this,
         result => {
+          this.loading = false;
           this.documentalTypes = result.resultList;
         },
         error => {
+          this.loading = true;
           this.error.emit('Ha ocurrido un error con la aplicación');
         }
       );
@@ -103,11 +125,12 @@ export class ProductDetailComponent extends BaseComponent implements OnInit {
 
 
   uploadFile() {
+    this.error.emit(undefined);
     if (!this.fileData || this.fileData == null) {
       this.error.emit('No se ha cargado ningún archivo.');
       return;
     }
-
+    this.loading = true;
     this.documentalTypesService
       .saveFile(this._product.productId, this.fileData)
       .safeSubscribe(
@@ -124,6 +147,7 @@ export class ProductDetailComponent extends BaseComponent implements OnInit {
   }
 
   changeRequired(type) {
+    this.loading = true;
     type.required = !type.required;
     this.documentalTypesService
       .update(type)

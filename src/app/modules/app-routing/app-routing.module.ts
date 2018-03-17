@@ -21,9 +21,9 @@ const appRoutes: Routes = [
     { path: 'adminProducts', component: ProductsComponent, canActivate: [AuthGuard] },
     { path: 'typify/:productId', component: TypifyComponent, canActivate: [AuthGuard] },
     { path: 'validate/:productId', component: ValidateComponent, canActivate: [AuthGuard] },
-    { path: 'auth-callback', component: AuthCallbackComponent }
+    { path: 'auth-callback', component: AuthCallbackComponent },
     // otherwise redirect to home
-   // { path: '**', redirectTo: '/home', canActivate: [AuthGuard] }
+    { path: '**', redirectTo: '/home', canActivate: [AuthGuard] }
 ];
 
 @NgModule({

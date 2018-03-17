@@ -13,6 +13,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { TypifyFormComponent } from '../../../typification/typify/typify-form/typify-form.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-validate-form',
@@ -23,8 +24,9 @@ import { TypifyFormComponent } from '../../../typification/typify/typify-form/ty
 export class ValidateFormComponent extends TypifyFormComponent {
 
   constructor(protected validationService: ValidationService,
-    protected router: Router) {
-    super(validationService, router);
+    protected router: Router,
+    protected modalService: NgbModal) {
+    super(validationService, router, modalService);
     this.documentalTypes1 = new Array();
     this.documentalTypes2 = new Array();
     this.documentalTypes3 = new Array();

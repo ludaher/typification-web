@@ -54,13 +54,15 @@
   </div>
   <ul class="nav navbar-nav navbar-right">
     <li>
-      <button type="submit" class="btn btn-success navbar-btn">Guardar</button>
+      <button type="submit" class="btn btn-success navbar-btn">
+          <fa *ngIf="loading" name="refresh" animation="spin"></fa>
+        Guardar</button>
     </li>
   </ul>
 </form>
 <br>
 <hr>
-<div class="container ">
+<div class="container " *ngIf="product.ProductId != 0">
   <div class="card transparent">
     <div class="card-header principal">
       Tipos documentales
@@ -95,7 +97,7 @@
               <td>{{type.group}}</td>
               <td>{{type.required}}</td>
               <td>
-                <input type="checkbox" [(ngModel)]="type.required" (click)="changeRequired(type)" />
+                <input type="checkbox" [(ngModel)]="type.required" (click)="changeRequired(type)"  [attr.disabled]="loading?'':null"/>
               </td>
             </tr>
           </tbody>
