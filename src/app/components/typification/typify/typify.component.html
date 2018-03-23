@@ -56,7 +56,7 @@
     <div class="col-md-5 fill">
       <div class="card main-container">
         <div class="card-header d-flex justify-content-between">
-          <b class="">Tipificación</b>
+          <b class="title">Tipificación</b>
           <div class="align-self-center text-right">
             <button type="button" class="btn btn-info" [popover]="popTemplate" popoverTitle="Ayuda" placement="bottom" triggers="focus">
               <fa name="info-circle"></fa>
@@ -64,16 +64,19 @@
           </div>
         </div>
         <div class="card-block">
-          <br>
           <div class="content">
+            <div *ngIf="showError()" class="alert alert-danger">
+              <strong>Error!</strong> {{error}}
+            </div>
+
             <div class=" col-md-12">
-              <app-pdf-navigator (onPageChanged)="onPageChanged($event)" [pdfPage]="page" [totalPdfPages]="totalPdfPages">
+              <app-pdf-navigator (onPageChanged)="onPageChanged($event)" [pdfPage]="page" [totalPdfPages]="totalPdfPages" [loading]="!pdfLoaded">
               </app-pdf-navigator>
             </div>
             <div class=" col-md-12">
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" [(ngModel)]="loadAllPdf" (ngModelChange)="loadAllPdfChange($event)"> pdf completo
+                  <input type="checkbox" [(ngModel)]="loadAllPdf" (ngModelChange)="loadAllPdfChange($event)" [disabled]="!pdfLoaded"> pdf completo
                 </label>
               </div>
             </div>
@@ -87,10 +90,6 @@
               <app-typify-form [productId]="productId" [processId]="processId" [page]="page" [pdfLoaded]="pdfLoaded" [process]="currentProcess"
                 (onTypificationSaved)="onTypificationSaved($event)" (onKeydown)="typeKeydown($event)">
               </app-typify-form>
-
-              <div *ngIf="showError()" class="alert alert-danger">
-                <strong>Error!</strong> {{error}}
-              </div>
             </div>
           </div>
           <br>
@@ -119,7 +118,7 @@
           <div #pdfContent [ngClass]="rotation">
             <pdf-viewer [src]="pdfSrc" [render-text]="true" style="display: block;" [show-all]="false" [render-text]="false" [stick-to-page]="false"
               [(page)]="pdfPage" [original-size]="false" [fit-to-page]="true" [zoom]='pdfZoom' (after-load-complete)="onLoadPdfComplete($event)"
-              (on-progress)="onProgressPdf($event)" (rotation)="pdfRotate" (page-rendered)="pageRendered($event)">
+              (on-progress)="onProgressPdf($event)" (rotation)="pdfRotate" (page-rendered)="pageRendered($event)" (error)="onError($event)">
             </pdf-viewer>
           </div>
         </div>

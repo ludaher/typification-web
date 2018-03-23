@@ -40,7 +40,7 @@ export class TypifyComponent implements OnInit, OnDestroy {
   rotation: string;
 
   pdfSrc: any;
-  source  = {
+  source = {
     httpHeaders: {
       'Authorization': this.authService.getAuthorizationHeaderValue()
     },
@@ -58,6 +58,7 @@ export class TypifyComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    localStorage.setItem('pdfZoom', this.pdfZoom.toString());
     this.productsSub.unsubscribe();
     this.querySub.unsubscribe();
     this.paramsSub.unsubscribe();
@@ -75,7 +76,8 @@ export class TypifyComponent implements OnInit, OnDestroy {
           this.processId = queryParams['processId'] || 0;
           // load parameters
           console.log('Destroy form');
-          this.pdfZoom = 0.5;
+          const pdfZoom = localStorage.getItem('pdfZoom');
+          this.pdfZoom = pdfZoom ? parseFloat(pdfZoom) : 0.5;
           this.pdfRotate = 0;
           this.pdfLoaded = false;
           this.loadAllPdf = localStorage.getItem('loadAllPdf') === 'true';
@@ -91,11 +93,11 @@ export class TypifyComponent implements OnInit, OnDestroy {
       .subscribe(
         typificationProcess => {
           if (typificationProcess == null) { return; }
-          this.loadProcessPdf();
-          this.loadPdfPage();
           this.currentProcess = typificationProcess;
           this.productId = typificationProcess.process.productId;
           this.totalPdfPages = typificationProcess.process.totalPages;
+          this.loadProcessPdf();
+          this.loadPdfPage();
         },
         error => this.error = 'Ha ocurrido un error con la aplicación'
       );
@@ -130,25 +132,28 @@ export class TypifyComponent implements OnInit, OnDestroy {
   }
 
   loadProcessPdf() {
-    if (this.loadAllPdf === true) {
-      this.changePdfSource(`${environment.origin}/api/repository/${this.processId}`);
+    if (this.currentProcess && this.currentProcess.process && this.loadAllPdf === true) {
+      this.changePdfSource(`${environment.repositoryOrigin}/api/files/download/${this.currentProcess.process.relativePath}`);
     }
   }
 
   loadPdfPage() {
-    if (this.loadAllPdf === false) {
+    if (this.loadAllPdf === false && this.productId && this.processId) {
       this.pdfLoaded = false;
       if (this.page) {
-        this.changePdfSource(`${environment.origin}/api/repository/${this.processId}/${this.page}`);
+        this.changePdfSource(`${environment.repositoryOrigin}/api/files/download` +
+          `?filter=Typification.ProductId,13,${this.productId}|` +
+          `Typification.ProcessId,13,${this.processId}|Typification.Page,13,${this.page}`);
       } else {
-        this.changePdfSource(`${environment.origin}/api/repository/${this.processId}/1`);
+        this.changePdfSource(`${environment.repositoryOrigin}/api/files/download`
+          + `?filter=Typification.ProductId,13,${this.productId}|` +
+          +`Typification.ProcessId,13,${this.processId}|Typification.Page,13,1`);
       }
     }
   }
 
   onLoadPdfComplete(e) {
     console.log('loadComplete');
-    this.pdfLoaded = true;
     if (this.loadAllPdf === true || !this.page) {
       this.pdfPage = this.page = 1;
     }
@@ -202,5 +207,9 @@ export class TypifyComponent implements OnInit, OnDestroy {
 
   pageRendered(e: CustomEvent) {
     this.pdfLoaded = true;
+  }
+  onError($event) {
+    this.pdfLoaded = true;
+    this.error = 'Error cargando el PDF.';
   }
 }

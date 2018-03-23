@@ -1,32 +1,31 @@
 <div class="input-group">
   <span class="input-group-btn">
-    <button class="btn btn-default" title="Primero" (click)="firstPage($event)" 
-      [disabled]="pdfPage == 1 || loading"><fa name="angle-left"></fa>
-    </button>  
+    <button class="btn btn-default" title="Primero" (click)="firstPage($event)" [disabled]="pdfPage == 1 || loading === true">
+      <fa name="angle-double-left"></fa>
+    </button>
   </span>
   <span class="input-group-btn">
-    <button class="btn btn-default" title="anterior" (click)="previousPage($event)"
-      [disabled]="pdfPage == 1 || loading"><fa name="angle-double-left"></fa></button>
+    <button class="btn btn-default" title="anterior" (click)="previousPage($event)" [disabled]="pdfPage == 1 ||  loading === true">
+      <fa name="angle-left"></fa>
+    </button>
   </span>
   <span class="input-group-addon">
     pág.
   </span>
-  <input type="number" form-control class="form-control "
-    placeholder="pág" id="page" autocomplete="off" name="page"
-    [(ngModel)]="pdfPage"
-    (change)="changePdfPage($event)" 
-    [disabled]="loading"
-    required />
+  <input type="number" form-control class="form-control " placeholder="pág" id="page" autocomplete="off" name="page" [(ngModel)]="pdfPage"
+    (change)="changePdfPage($event)" [disabled]=" loading === true" required />
 
   <span class="input-group-addon">
     de {{totalPdfPages}}
   </span>
   <span class="input-group-btn">
-    <button href="javascript:void(0)" class="btn btn-default" title="Siguiente" 
-    (click)="nextPage($event)" [disabled]="pdfPage >= totalPdfPages || loading"><fa name="angle-double-right"></fa></button>
+    <button href="javascript:void(0)" class="btn btn-default" title="Siguiente" (click)="nextPage($event)" [disabled]="pdfPage >= totalPdfPages ||  loading === true">
+      <fa name="angle-right"></fa>
+    </button>
   </span>
   <span class="input-group-btn">
-    <button href="javascript:void(0)" class="btn btn-default" title="Último" (click)="lastPage($event)"
-    [disabled]="pdfPage >= totalPdfPages || loading"><fa name="angle-right"></fa></button>
+    <button href="javascript:void(0)" class="btn btn-default" title="Último" (click)="lastPage($event)" [disabled]="pdfPage >= totalPdfPages || loading">
+      <fa name="angle-double-right"></fa>
+    </button>
   </span>
 </div>

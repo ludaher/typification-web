@@ -96,9 +96,9 @@ export class ProductDetailComponent extends BaseComponent implements OnInit {
           this.loading = false;
           this.documentalTypes = result.resultList;
         },
-        error => {
+        err => {
           this.loading = true;
-          this.error.emit('Ha ocurrido un error con la aplicación');
+          this.error.emit(err.error.message);
         }
       );
 

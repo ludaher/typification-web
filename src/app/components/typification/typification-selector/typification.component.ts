@@ -12,7 +12,9 @@ import { Router } from '@angular/router';
 export class TypificationComponent implements OnInit {
   isCollapsed: boolean[];
   products: ProductProcess[];
+  error: string;
   warning: string;
+  loading = false;
 
   constructor(private service: TypificationService, private router: Router) { }
 
@@ -21,22 +23,31 @@ export class TypificationComponent implements OnInit {
   }
 
   loadProducts(): void {
+    this.loading = true;
     this.service
       .getProducts()
       .subscribe(
-      data => this.products = data,
-      err => console.log(err)
+        data => {
+          this.products = data;
+          this.loading = false;
+        },
+        err => {
+          this.loading = false;
+          this.error = err.error.message;
+        }
       );
   }
 
   assignProcess(productId) {
+    this.loading = true;
     this.service
       .assignProcess(productId)
       .subscribe(
-      data => this.router.navigate(['/typify', productId], { queryParams: { processId: data } }),
-      err => {
-        this.warning = err.error.error;
-      }
+        data => this.router.navigate(['/typify', productId], { queryParams: { processId: data } }),
+        err => {
+          this.loading = false;
+          this.error = err.error.message;
+        }
       );
   }
 }

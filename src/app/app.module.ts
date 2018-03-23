@@ -46,7 +46,6 @@ import { ProductListComponent } from './components/admin/products/product-list/p
 import { ProductDetailComponent } from './components/admin/products/product-detail/product-detail.component';
 import { DocumentalTypesService } from './services/admin/documental-types.service';
 import { AuthCallbackComponent } from './components/auth-callback/auth-callback.component';
-import { UserProcessesComponent } from './components/admin/user-processes/user-processes.component';
 
 @NgModule({
   declarations: [
@@ -64,8 +63,7 @@ import { UserProcessesComponent } from './components/admin/user-processes/user-p
     ProductListComponent,
     ProductDetailComponent,
     PagerComponent,
-    AuthCallbackComponent,
-    UserProcessesComponent
+    AuthCallbackComponent
   ],
   imports: [
     BrowserModule,

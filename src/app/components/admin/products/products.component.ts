@@ -65,7 +65,10 @@ export class ProductsComponent extends BaseComponent implements OnInit {
           this.products = result.resultList;
           this.loading = false;
         },
-        error => this.showError(error.error)
+        err => {
+          this.loading = false;
+          this.showError(err.error.message);
+        }
       );
     this.viewList = true;
   }
@@ -82,9 +85,9 @@ export class ProductsComponent extends BaseComponent implements OnInit {
           this.viewList = false;
           // console.log(this.product);
         },
-        error => {
-          this.showError(error.error);
+        err => {
           this.loading = false;
+          this.showError(err.error.message);
         }
       );
   }

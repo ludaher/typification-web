@@ -3,6 +3,6 @@
   <button class="btn btn-default" (click)="onPrev()" [disabled]="page == 1 || loading"><fa name="angle-double-left"></fa></button>
   <input type="number" class="form-control" placeholder="página" id="page" autocomplete="off" name="page" [(ngModel)]="page" (keyup.enter)="changePage()" required style="width: 120px;" />
   <button class="btn btn-primary" type="button" (click)="changePage()">Ir!</button>
-  <button class="btn btn-default" (click)="onNext()" [disabled]="page === pagesToShow || loading"><fa name="angle-double-right"></fa></button>
-  <button class="btn btn-default" (click)="goTo(pagesToShow)" [disabled]="page === pagesToShow || loading">{{pagesToShow}}</button>
+  <button class="btn btn-default" (click)="onNext()" [disabled]="page === pagesToShow || loading || page < 1"><fa name="angle-double-right"></fa></button>
+  <button class="btn btn-default" (click)="goTo(pagesToShow)" [disabled]="page === pagesToShow || loading || page < 1">{{pagesToShow}}</button>
 </div>

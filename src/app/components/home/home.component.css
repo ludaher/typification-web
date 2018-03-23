@@ -1,5 +1,6 @@
 .jumbotron{
     background-color:transparent;
+    color:#fff;
 }
 
 .jumbotron img{
@@ -9,6 +10,7 @@
 
 h1{
     font-size: 4em;
+    color:#fff;
 }
 
 .vertical-center {

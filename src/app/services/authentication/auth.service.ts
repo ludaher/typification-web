@@ -35,7 +35,7 @@ export class AuthService {
 
   startAuthentication(): Promise<void> {
     const returnUrl = this.location.path(); // encodeURIComponent(window.location.href);
-    localStorage.setItem('returnUrl', returnUrl);
+    localStorage.setItem('returnUrl', encodeURI(returnUrl));
     return this.manager.signinRedirect();
   }
 
@@ -49,10 +49,17 @@ export class AuthService {
         this.router.navigate(['/home']);
 
       } else {
-        this.router.navigate([returnUrl]);
+        const url = decodeURI(returnUrl).split('?');
+        if (url.length < 2) {
+          this.router.navigate([url[0]]);
+        }
+        const search = url[1];
+        const query = JSON.parse('{"' + search.replace(/&/g, '","').replace(/=/g, '":"') + '"}',
+          function (key, value) { return key === '' ? value : decodeURIComponent(value); });
+        this.router.navigate([url[0]], { queryParams: query });
       }
     }).catch(error => {
-        this.router.navigate(['/home']);
+      this.router.navigate(['/home']);
     });
   }
 
